@@ -1,0 +1,3 @@
+config:
+  gcp:project: coingecko-api-382808
+  gcp:region: us-east1
