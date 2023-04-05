@@ -1,19 +1,29 @@
 import * as gcp from "@pulumi/gcp";
-import express from "express";
+import * as pulumi from "@pulumi/pulumi";
 
 import { getCirculatingSupply } from "./app/query";
 
-// Enable Cloud Functions API
+const pulumiConfig = new pulumi.Config();
+
+// Enable required APIs
 new gcp.projects.Service("cloudfunctions", {
   service: "cloudfunctions.googleapis.com",
 });
 
 // Deploy Cloud HttpCallback Function
 const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction("coingecko-api", {
-  callback: async (req: express.Request, res: express.Response) => {
-    const value = getCirculatingSupply();
+  callback: async (req: any, res: any) => {
+    const value = await getCirculatingSupply();
 
-    res.send(value);
+    if (!value) {
+      res.status(500).send("Error fetching circulating supply");
+      return;
+    }
+
+    res.send(value).end();
+  },
+  environmentVariables: {
+    GRAPHQL_API_KEY: pulumiConfig.requireSecret("GRAPHQL_API_KEY"),
   },
 });
 
