@@ -1,8 +1,8 @@
 import { Client } from "@urql/core";
 import fetch from "cross-fetch";
 
-import { getVariable } from "./environment/environment";
-import { OhmCirculatingSupplyDocument } from "./generated/graphql";
+import { getVariable } from "../environment/environment";
+import { OhmCirculatingSupplyDocument } from "../generated/graphql";
 
 const GRAPHQL_ENDPOINT =
   "https://gateway.thegraph.com/api/[api-key]/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY";
