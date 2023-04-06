@@ -1,6 +1,7 @@
 {
   "name": "coingecko-api",
   "main": "src/index.ts",
+  "description": "Serves data on the Olympus protocol to the CoinGecko API",
   "devDependencies": {
     "@graphql-codegen/cli": "^3.3.0",
     "@graphql-codegen/typed-document-node": "^4.0.0",

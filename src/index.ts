@@ -4,43 +4,64 @@ import * as pulumi from "@pulumi/pulumi";
 import { getValue } from "./app";
 
 const pulumiConfig = new pulumi.Config();
+const gcpConfig = new pulumi.Config("gcp");
 const PROJECT_NAME = "coingecko-api";
 
 // Enable required APIs
-new gcp.projects.Service("cloudfunctions", {
+const serviceCloudFunctions = new gcp.projects.Service("cloudfunctions", {
   service: "cloudfunctions.googleapis.com",
 });
 
-new gcp.projects.Service("firestore", {
+const serviceCloudBuild = new gcp.projects.Service("cloudbuild", {
+  service: "cloudbuild.googleapis.com",
+});
+
+const serviceFirestore = new gcp.projects.Service("firestore", {
   service: "firestore.googleapis.com",
 });
 
-// Create a document in Cloud Datastore to use for caching
-const firestoreCollection = `${PROJECT_NAME}-${pulumi.getStack()}`;
-const firestoreDocument = "cache";
-new gcp.firestore.Document(firestoreCollection, {
-  collection: firestoreCollection,
-  documentId: firestoreDocument,
-  fields: "",
+// Create the default database for Cloud Firestore
+const firestoreDatabase = new gcp.firestore.Database("default", {
+  name: "(default)",
+  type: "FIRESTORE_NATIVE",
+  locationId: gcpConfig.require("region"),
 });
+
+// Create a document in Cloud Datastore to use for caching
+const firestoreCollectionName = `${PROJECT_NAME}-${pulumi.getStack()}`;
+const firestoreDocumentName = "cache";
+const firestoreDocument = new gcp.firestore.Document(
+  firestoreCollectionName,
+  {
+    collection: firestoreCollectionName,
+    documentId: firestoreDocumentName,
+    fields: "",
+  },
+  { dependsOn: [serviceFirestore, firestoreDatabase] },
+);
 
 // Deploy Cloud HttpCallback Function
-const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction("coingecko-api", {
-  callback: async (req: any, res: any) => {
-    const value = await getValue();
+const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
+  "coingecko-api",
+  {
+    callback: async (req: any, res: any) => {
+      const value = await getValue();
 
-    if (!value) {
-      res.status(500).send("Error fetching circulating supply");
-      return;
-    }
+      if (!value) {
+        res.status(500).send("Error fetching circulating supply");
+        return;
+      }
 
-    res.send(value).end();
+      res.send(value).end();
+    },
+    environmentVariables: {
+      GRAPHQL_API_KEY: pulumiConfig.requireSecret("GRAPHQL_API_KEY"),
+      FIRESTORE_COLLECTION: firestoreCollectionName,
+      FIRESTORE_DOCUMENT: firestoreDocumentName,
+    },
+    runtime: "nodejs16",
   },
-  environmentVariables: {
-    GRAPHQL_API_KEY: pulumiConfig.requireSecret("GRAPHQL_API_KEY"),
-    FIRESTORE_COLLECTION: firestoreCollection,
-    FIRESTORE_DOCUMENT: firestoreDocument,
-  },
-});
+  { dependsOn: [serviceCloudFunctions, serviceCloudBuild, firestoreDocument] },
+);
 
 export const triggerUrl = cloudFunction.httpsTriggerUrl;

@@ -1,0 +1,5 @@
+config:
+  coingecko-api:GRAPHQL_API_KEY:
+    secure: AAABAEUAR1cgGbjU4ddsfHlYHcLMRaiBMNQ7zoy6ffFU8op5WWt1R/RBBMx1FsmDXAYMQetfKaC/Lu+EHWde6A==
+  gcp:project: coingecko-api-382821
+  gcp:region: us-east1

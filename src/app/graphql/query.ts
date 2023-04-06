@@ -12,6 +12,7 @@ const getGraphQLEndpoint = (): string => {
 };
 
 export const getCirculatingSupply = async (): Promise<string | null> => {
+  console.log("Fetching circulating supply from GraphQL endpoint");
   const client = new Client({
     url: getGraphQLEndpoint(),
     fetch,

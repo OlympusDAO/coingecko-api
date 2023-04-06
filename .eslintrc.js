@@ -28,6 +28,7 @@ module.exports = {
     "no-nested-ternary": "off",
     "no-restricted-syntax": "off",
     "no-plusplus": "off",
+    "require-await": "error",
     "simple-import-sort/imports": "error",
     "unused-imports/no-unused-imports": "error",
     "@typescript-eslint/explicit-function-return-type": "off",

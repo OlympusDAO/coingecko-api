@@ -51,9 +51,8 @@ export const getCachedValue = async (): Promise<string | null> => {
 };
 
 export const setCachedValue = async (value: string): Promise<void> => {
-  const document = await getFirestoreDocument();
-
   console.log("Updating cache");
+  const document: firestore.DocumentSnapshot<CacheDocument> = await getFirestoreDocument();
   await document.ref.set({
     value,
     timestamp: Date.now(),
