@@ -20,6 +20,10 @@ const serviceFirestore = new gcp.projects.Service("firestore", {
   service: "firestore.googleapis.com",
 });
 
+const serviceFirebase = new gcp.projects.Service("firebase", {
+  service: "firebase.googleapis.com",
+});
+
 // Create the default database for Cloud Firestore
 const firestoreDatabase = new gcp.firestore.Database(
   "default",
@@ -34,12 +38,12 @@ const firestoreDatabase = new gcp.firestore.Database(
 );
 
 // Create a document in Cloud Datastore to use for caching
-const firestoreCollectionName = `${PROJECT_NAME}-${pulumi.getStack()}`;
+const projectStackName = `${PROJECT_NAME}-${pulumi.getStack()}`;
 const firestoreDocumentName = "cache";
 const firestoreDocument = new gcp.firestore.Document(
-  firestoreCollectionName,
+  projectStackName,
   {
-    collection: firestoreCollectionName,
+    collection: projectStackName,
     documentId: firestoreDocumentName,
     fields: "",
   },
@@ -48,7 +52,7 @@ const firestoreDocument = new gcp.firestore.Document(
 
 // Deploy Cloud HttpCallback Function
 const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
-  "coingecko-api",
+  projectStackName,
   {
     callback: async (req: any, res: any) => {
       const value = await getValue();
@@ -62,7 +66,7 @@ const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
     },
     environmentVariables: {
       GRAPHQL_API_KEY: pulumiConfig.requireSecret("GRAPHQL_API_KEY"),
-      FIRESTORE_COLLECTION: firestoreCollectionName,
+      FIRESTORE_COLLECTION: projectStackName,
       FIRESTORE_DOCUMENT: firestoreDocumentName,
     },
     runtime: "nodejs16",
@@ -70,4 +74,69 @@ const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
   { dependsOn: [serviceCloudFunctions, serviceCloudBuild, firestoreDocument] },
 );
 
-export const triggerUrl = cloudFunction.httpsTriggerUrl;
+/**
+ * Firebase
+ */
+
+// Deploy a Firebase Hosting site, so that we can obtain a static URL
+const firebaseProject = new gcp.firebase.Project(
+  projectStackName,
+  {
+    project: gcpConfig.require("project"),
+  },
+  {
+    dependsOn: [serviceFirebase],
+  },
+);
+
+const firebaseHostingSite = new gcp.firebase.HostingSite(
+  "coingecko-api",
+  {
+    project: firebaseProject.project,
+    siteId: projectStackName,
+  },
+  {
+    dependsOn: [firebaseProject],
+  },
+);
+
+const firebaseSiteId = firebaseHostingSite.siteId;
+if (!firebaseSiteId) {
+  throw new Error("Firebase Hosting site ID is undefined");
+}
+
+const firebaseSiteIdInput: pulumi.Input<string> = firebaseSiteId.apply(str => `${str}`);
+
+// Create a rewrite rule to redirect all requests to the Cloud Function
+const firebaseHostingVersion = new gcp.firebase.HostingVersion(
+  projectStackName,
+  {
+    siteId: firebaseSiteIdInput,
+    config: {
+      rewrites: [
+        {
+          glob: "/",
+          function: cloudFunction.function.name,
+        },
+      ],
+    },
+  },
+  {
+    dependsOn: [firebaseHostingSite, cloudFunction],
+  },
+);
+
+const firebaseHostingRelease = new gcp.firebase.HostingRelease(
+  projectStackName,
+  {
+    siteId: firebaseSiteIdInput,
+    versionName: firebaseHostingVersion.name,
+    message: "Cloud Functions integration",
+  },
+  {
+    dependsOn: [firebaseHostingVersion],
+  },
+);
+
+export const cloudFunctionTriggerUrl = cloudFunction.httpsTriggerUrl;
+export const firebaseHostingUrl = firebaseHostingSite.defaultUrl;

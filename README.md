@@ -28,6 +28,7 @@ Deployment is handled by Pulumi, with hosting on GCP.
 To deploy:
 
 1. Copy the `.env.sample` file and fill in any variables
+1. Obtain the JSON credentials file for the project's service account and save as `gcp_credentials.json`. Firebase requires a service account for deployment, hence the need to jump through this hoop.
 1. Run `pulumi stack select` and select/create the required stack
 1. Run `pulumi refresh` to grab the current state from GCP
 1. Run `pulumi up` to deploy.
