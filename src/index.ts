@@ -21,11 +21,17 @@ const serviceFirestore = new gcp.projects.Service("firestore", {
 });
 
 // Create the default database for Cloud Firestore
-const firestoreDatabase = new gcp.firestore.Database("default", {
-  name: "(default)",
-  type: "FIRESTORE_NATIVE",
-  locationId: gcpConfig.require("region"),
-});
+const firestoreDatabase = new gcp.firestore.Database(
+  "default",
+  {
+    name: "(default)",
+    type: "FIRESTORE_NATIVE",
+    locationId: gcpConfig.require("region"),
+  },
+  {
+    protect: true,
+  },
+);
 
 // Create a document in Cloud Datastore to use for caching
 const firestoreCollectionName = `${PROJECT_NAME}-${pulumi.getStack()}`;

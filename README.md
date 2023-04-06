@@ -31,3 +31,5 @@ To deploy:
 1. Run `pulumi stack select` and select/create the required stack
 1. Run `pulumi refresh` to grab the current state from GCP
 1. Run `pulumi up` to deploy.
+
+If the GCP project is shared between stacks, you may need to import the default Firestore database: `pulumi import gcp:firestore/database:Database default "(default)"`
