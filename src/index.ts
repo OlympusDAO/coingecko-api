@@ -76,6 +76,8 @@ const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
 
 /**
  * Firebase
+ *
+ * We utilise Firebase hosting to provide a static URL to the Cloud Function.
  */
 
 // Deploy a Firebase Hosting site, so that we can obtain a static URL
@@ -113,10 +115,11 @@ const firebaseHostingVersion = new gcp.firebase.HostingVersion(
   {
     siteId: firebaseSiteIdInput,
     config: {
-      rewrites: [
+      redirects: [
         {
           glob: "/",
-          function: cloudFunction.function.name,
+          location: cloudFunction.httpsTriggerUrl,
+          statusCode: 302,
         },
       ],
     },
