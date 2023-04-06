@@ -11,6 +11,8 @@ This is a very simple app, architected in the following way:
 - GraphQL endpoint for the protocol-metrics subgraph. See: [olympus-protocol-metrics-subgraph](https://github.com/OlympusDAO/olympus-protocol-metrics-subgraph)
 - Firestore database
 - Serverless function (in GCP)
+- Hosting in Firebase, so that the URL endpoint is static
+  - A custom domain under olympusdao.finance is also manually mapped to the production URL endpoint
 
 When the function's trigger URL is hit, the following are performed:
 
