@@ -95,7 +95,7 @@ const firebaseHostingSite = new gcp.firebase.HostingSite(
   "coingecko-api",
   {
     project: firebaseProject.project,
-    siteId: projectStackName,
+    siteId: `olympusdao-${projectStackName}`, // Will end up as olympusdao-coingecko-api-<stack>.web.app
   },
   {
     dependsOn: [firebaseProject],
