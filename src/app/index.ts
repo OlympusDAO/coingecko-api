@@ -1,10 +1,15 @@
 import { getCachedValue, setCachedValue } from "./cache/cache";
-import { getCirculatingSupply } from "./graphql/query";
+import { getCirculatingSupply } from "./query";
 
-export const getValue = async (): Promise<string | null> => {
+export const getValue = async (cache: string | undefined): Promise<string | null> => {
+  const skipCache = cache === "false";
+  if (skipCache) {
+    console.log("Skipping cache");
+  }
+
   // Return the cached value if still valid
   const cachedValue: string | null = await getCachedValue();
-  if (cachedValue) {
+  if (cachedValue && !skipCache) {
     return cachedValue;
   }
 

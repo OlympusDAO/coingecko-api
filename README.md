@@ -8,7 +8,7 @@ This project serves the circulating supply of OHM to CoinGecko, so that it can b
 
 This is a very simple app, architected in the following way:
 
-- GraphQL endpoint for the protocol-metrics subgraph. See: [olympus-protocol-metrics-subgraph](https://github.com/OlympusDAO/olympus-protocol-metrics-subgraph)
+- treasury-subgraph API endpoint. See: [treasury-subgraph](https://github.com/OlympusDAO/treasury-subgraph)
 - Firestore database
 - Serverless function (in GCP)
 - Hosting in Firebase, so that the URL endpoint is static
@@ -20,8 +20,8 @@ When the function's trigger URL is hit, the following are performed:
 
     - Values are currently cached for 1 hour, in order to reduce queries to the GraphQL endpoint (which incur a charge).
 
-1. If there is no valid cached value, a GraphQL query is performed. If successful, the cache is updated and the value is returned.
-1. If no value is returned by the GraphQL query, HTTP status 500 is returned by the function.
+1. If there is no valid cached value, an API query is performed. If successful, the cache is updated and the value is returned.
+1. If no value is returned by the API query, HTTP status 500 is returned by the function.
 
 ## Deployment
 
@@ -36,3 +36,7 @@ To deploy:
 1. Run `pulumi up` to deploy.
 
 If the GCP project is shared between stacks, you may need to import the default Firestore database: `pulumi import gcp:firestore/database:Database default "(default)"`
+
+## Notes
+
+- To force the deployed function to ignore the cache, append `?cache=false` to the URL
