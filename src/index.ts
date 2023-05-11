@@ -55,7 +55,8 @@ const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
   projectStackName,
   {
     callback: async (req: any, res: any) => {
-      const value = await getValue();
+      const cache: string | undefined = req.query.cache;
+      const value = await getValue(cache);
 
       if (!value) {
         res.status(500).send("Error fetching circulating supply");
