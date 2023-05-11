@@ -1,4 +1,5 @@
 import { createClient } from "@olympusdao/treasury-subgraph-client";
+import { fetch } from "cross-fetch";
 
 export const getCirculatingSupply = async (): Promise<string | null> => {
   const apiEndpointOverride = process.env.API_ENDPOINT;
@@ -8,6 +9,7 @@ export const getCirculatingSupply = async (): Promise<string | null> => {
 
   const client = createClient({
     baseURL: apiEndpointOverride,
+    customFetch: fetch,
   });
 
   const response = await client.query({
