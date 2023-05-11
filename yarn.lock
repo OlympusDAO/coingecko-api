@@ -389,10 +389,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@olympusdao/treasury-subgraph-client@^1.2.0-dev.0":
-  version "1.2.0-dev.0"
-  resolved "https://registry.yarnpkg.com/@olympusdao/treasury-subgraph-client/-/treasury-subgraph-client-1.2.0-dev.0.tgz#1156b6bb7f411e35940ef9a72a4629735ea351fc"
-  integrity sha512-bvYIeIbxO/E2LP41gRhr1pdTOU5vt2n5l3wHwyaY7i/T8vl0ArYQF+8TA6M6rRmAVnUkDXz+4drtbpagZ+1Srg==
+"@olympusdao/treasury-subgraph-client@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@olympusdao/treasury-subgraph-client/-/treasury-subgraph-client-1.2.0.tgz#d20939b971fa3982e3a5800fe402f7a329ac28cf"
+  integrity sha512-sC8U23lby1cvkqEqVdlhmIWcPDLdlABCfidJI6yMKovasfIBHXP0Wnh4YMuCyb/heF2FCXEApCUzI76NKWkxJQ==
   dependencies:
     "@wundergraph/sdk" "^0.151.0"
 
