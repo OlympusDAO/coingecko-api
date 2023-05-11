@@ -65,7 +65,7 @@ const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
       res.send(value).end();
     },
     environmentVariables: {
-      GRAPHQL_API_KEY: pulumiConfig.requireSecret("GRAPHQL_API_KEY"),
+      API_ENDPOINT: pulumiConfig.get("apiEndpoint"), // Optional
       FIRESTORE_COLLECTION: projectStackName,
       FIRESTORE_DOCUMENT: firestoreDocumentName,
     },

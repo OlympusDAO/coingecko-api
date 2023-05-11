@@ -1,6 +1,5 @@
 config:
-  coingecko-api:GRAPHQL_API_KEY:
-    secure: AAABANhrKJjRfRS/6XM++0A67l3nt9Pe+luTZE1BUY+naElVgYeTN89/85rSAIbK64qFixu4hFjIhkcD9S1N4g==
+  coingecko-api:apiEndpoint: https://olympusdao-olympus-treasury-subgraph-dev-8.wundergraph.dev
   gcp:project: coingecko-api-382821
   gcp:region: us-east1
   gcp:credentials: gcp_credentials.json

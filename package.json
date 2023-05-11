@@ -3,10 +3,6 @@
   "main": "src/index.ts",
   "description": "Serves data on the Olympus protocol to the CoinGecko API",
   "devDependencies": {
-    "@graphql-codegen/cli": "^3.3.0",
-    "@graphql-codegen/typed-document-node": "^4.0.0",
-    "@graphql-codegen/typescript": "^3.0.3",
-    "@graphql-codegen/typescript-operations": "^3.0.3",
     "@pulumi/gcp": "^6.45.0",
     "@pulumi/pulumi": "^3.49.0",
     "@types/node": "^16",
@@ -25,13 +21,11 @@
   },
   "dependencies": {
     "@google-cloud/firestore": "^6.5.0",
-    "@urql/core": "^3.0.3",
-    "cross-fetch": "^3.1.5",
-    "graphql": "^16.6.0"
+    "@olympusdao/treasury-subgraph-client": "^1.2.0-dev.0",
+    "cross-fetch": "^3.1.5"
   },
   "scripts": {
     "build": "tsc",
-    "start": "ts-node index.ts",
-    "codegen": "graphql-codegen --config graphqlCodegen.ts"
+    "start": "ts-node src/app/cli.ts"
   }
 }

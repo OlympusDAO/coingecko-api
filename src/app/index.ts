@@ -1,5 +1,5 @@
 import { getCachedValue, setCachedValue } from "./cache/cache";
-import { getCirculatingSupply } from "./graphql/query";
+import { getCirculatingSupply } from "./query";
 
 export const getValue = async (): Promise<string | null> => {
   // Return the cached value if still valid

@@ -1,5 +1,0 @@
-query OHMCirculatingSupply {
-  protocolMetrics(first: 1, orderBy: block, orderDirection: desc) {
-    ohmCirculatingSupply
-  }
-}
