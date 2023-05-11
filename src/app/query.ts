@@ -8,7 +8,7 @@ export const getCirculatingSupply = async (): Promise<string | null> => {
   }
 
   const client = createClient({
-    baseURL: apiEndpointOverride,
+    ...(apiEndpointOverride ? { apiEndpoint: apiEndpointOverride } : {}),
     customFetch: fetch,
   });
 

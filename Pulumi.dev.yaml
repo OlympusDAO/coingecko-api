@@ -1,5 +1,4 @@
 config:
-  coingecko-api:apiEndpoint: https://olympus-treasury-subgraph-dev.wundergraph.dev/
   gcp:project: coingecko-api-382821
   gcp:region: us-east1
   gcp:credentials: gcp_credentials.json
