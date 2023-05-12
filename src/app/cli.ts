@@ -1,7 +1,7 @@
 import { getValue } from ".";
 
 const main = async () => {
-  const value = await getValue();
+  const value = await getValue("true");
   console.log(`Value = ${value}`);
 };
 
