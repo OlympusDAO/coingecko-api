@@ -12,13 +12,22 @@ export const getCirculatingSupply = async (): Promise<string | null> => {
     customFetch: fetch,
   });
 
-  const response = await client.query({
-    operationName: "latest/metrics",
-  });
+  let returnValue: string | null;
+  try {
+    const response = await client.query({
+      operationName: "latest/metrics",
+    });
 
-  if (!response.data) {
-    return null;
+    if (!response.data) {
+      returnValue = null;
+    } else {
+      returnValue = response.data.ohmCirculatingSupply.toString();
+    }
+  } catch (error) {
+    console.error(`Error fetching circulating supply: ${error}`);
+
+    returnValue = null;
   }
 
-  return response.data.ohmCirculatingSupply.toString();
+  return returnValue;
 };

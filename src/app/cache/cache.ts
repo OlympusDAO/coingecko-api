@@ -30,28 +30,33 @@ const getFirestoreDocument = async (): Promise<firestore.DocumentSnapshot<CacheD
   return await documentRef.get();
 };
 
-export const getCachedValue = async (): Promise<string | null> => {
+/**
+ *  Obtains the value from the cache.
+ *
+ * @returns [value, isCacheValid]
+ */
+export const getCachedValue = async (): Promise<[string | null, boolean]> => {
   const document = await getFirestoreDocument();
   const data = await document.data();
 
   // If no or incomplete data
   if (!data || !data.value || !data.timestamp) {
     console.log("Cache miss");
-    return null;
+    return [null, false];
   }
 
   // If cache is expired
   if (Date.now() - data.timestamp > CACHE_EXPIRATION) {
     console.log("Expired");
-    return null;
+    return [data.value, false];
   }
 
   console.log("Cache hit");
-  return data.value;
+  return [data.value, true];
 };
 
 export const setCachedValue = async (value: string): Promise<void> => {
-  console.log("Updating cache");
+  console.log(`Updating cache with value ${value}`);
   const document: firestore.DocumentSnapshot<CacheDocument> = await getFirestoreDocument();
   await document.ref.set({
     value,
