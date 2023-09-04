@@ -18,10 +18,29 @@ export const getCirculatingSupply = async (): Promise<string | null> => {
       operationName: "latest/metrics",
     });
 
+    // No data - return null
     if (!response.data) {
       returnValue = null;
-    } else {
-      returnValue = response.data.ohmCirculatingSupply.toString();
+    }
+    // Has data
+    else {
+      // Check that the timestamps for Ethereum and Arbitrum within the past 8 hours
+      const now = new Date().getTime();
+      const eightHoursAgoMilliseconds = now - 8 * 60 * 60 * 1000;
+      const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > eightHoursAgoMilliseconds;
+      const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > eightHoursAgoMilliseconds;
+
+      // If either timestamp is invalid, return null
+      if (!isEthereumTimestampValid || !isArbitrumTimestampValid) {
+        console.error(`Arbitrum or Ethereum timestamps were out of range`);
+        console.log(`Arbitrum timestamp: ${response.data.timestamps.Arbitrum}`);
+        console.log(`Ethereum timestamp: ${response.data.timestamps.Ethereum}`);
+        returnValue = null;
+      }
+      else {
+        // Return the circulating supply
+        returnValue = response.data.ohmCirculatingSupply.toString();
+      }
     }
   } catch (error) {
     console.error(`Error fetching circulating supply: ${error}`);
