@@ -20,6 +20,7 @@ export const getCirculatingSupply = async (): Promise<string | null> => {
 
     // No data - return null
     if (!response.data) {
+      console.error(`No data returned from API`);
       returnValue = null;
     }
     // Has data
@@ -30,15 +31,17 @@ export const getCirculatingSupply = async (): Promise<string | null> => {
       const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > eightHoursAgoMilliseconds;
       const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > eightHoursAgoMilliseconds;
 
+      console.log(`Arbitrum timestamp: ${response.data.timestamps.Arbitrum}`);
+      console.log(`Ethereum timestamp: ${response.data.timestamps.Ethereum}`);
+
       // If either timestamp is invalid, return null
       if (!isEthereumTimestampValid || !isArbitrumTimestampValid) {
         console.error(`Arbitrum or Ethereum timestamps were out of range`);
-        console.log(`Arbitrum timestamp: ${response.data.timestamps.Arbitrum}`);
-        console.log(`Ethereum timestamp: ${response.data.timestamps.Ethereum}`);
         returnValue = null;
       }
+      // Return the circulating supply
       else {
-        // Return the circulating supply
+        console.log(`Arbitrum and Ethereum timestamps are within range`);
         returnValue = response.data.ohmCirculatingSupply.toString();
       }
     }
