@@ -55,6 +55,7 @@ const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
   projectStackName,
   {
     callback: async (req: any, res: any) => {
+      console.log("Received request");
       const cache: string | undefined = req.query.cache;
       const value = await getValue(cache);
 
