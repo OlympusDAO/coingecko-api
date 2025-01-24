@@ -1,11 +1,11 @@
 import * as gcp from "@pulumi/gcp";
 import * as pulumi from "@pulumi/pulumi";
 
-import { getCirculatingSupplyValue } from "./app";
+import { getCirculatingSupplyValue, getTotalSupplyValue } from "./app";
 
 const pulumiConfig = new pulumi.Config();
 const gcpConfig = new pulumi.Config("gcp");
-const PROJECT_NAME = "coingecko-api";
+const PROJECT_NAME = process.env.PROJECT_NAME || "coingecko-api";
 
 // Enable required APIs
 const serviceCloudFunctions = new gcp.projects.Service("cloudfunctions", {
@@ -34,25 +34,26 @@ const firestoreDatabase = new gcp.firestore.Database(
   },
   {
     protect: true,
+    dependsOn: [serviceFirestore],
   },
 );
 
 // Create a document in Cloud Datastore to use for caching
 const projectStackName = `${PROJECT_NAME}-${pulumi.getStack()}`;
-const firestoreDocumentName = "cache";
-const firestoreDocument = new gcp.firestore.Document(
-  projectStackName,
+const circulatingSupplyFirestoreDocumentName = "cache";
+const circulatingSupplyFirestoreDocument = new gcp.firestore.Document(
+  `${projectStackName}-circulating-supply`,
   {
     collection: projectStackName,
-    documentId: firestoreDocumentName,
+    documentId: circulatingSupplyFirestoreDocumentName,
     fields: "",
   },
   { dependsOn: [serviceFirestore, firestoreDatabase] },
 );
 
 // Deploy Cloud HttpCallback Function
-const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
-  projectStackName,
+const circulatingSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
+  `${projectStackName}-circulating-supply`,
   {
     callback: async (req: any, res: any) => {
       console.log("Received request");
@@ -69,11 +70,49 @@ const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
     environmentVariables: {
       API_ENDPOINT: pulumiConfig.get("apiEndpoint"), // Optional
       FIRESTORE_COLLECTION: projectStackName,
-      FIRESTORE_DOCUMENT: firestoreDocumentName,
+      FIRESTORE_DOCUMENT: circulatingSupplyFirestoreDocumentName,
     },
-    runtime: "nodejs16",
+    runtime: "nodejs20",
   },
-  { dependsOn: [serviceCloudFunctions, serviceCloudBuild, firestoreDocument] },
+  { dependsOn: [serviceCloudFunctions, serviceCloudBuild, circulatingSupplyFirestoreDocument] },
+);
+
+// Create a document in Firestore for the total supply
+const totalSupplyFirestoreDocumentName = "total-supply";
+const totalSupplyFirestoreDocument = new gcp.firestore.Document(
+  `${projectStackName}-total-supply`,
+  {
+    collection: projectStackName,
+    documentId: totalSupplyFirestoreDocumentName,
+    fields: "",
+  },
+  { dependsOn: [serviceFirestore, firestoreDatabase] },
+);
+
+// Create a Cloud Function for the total supply
+const totalSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
+  `${projectStackName}-total-supply`,
+  {
+    callback: async (req: any, res: any) => {
+      console.log("Received request");
+      const cache: string | undefined = req.query.cache;
+      const value = await getTotalSupplyValue(cache);
+
+      if (!value) {
+        res.status(500).send("Error fetching total supply");
+        return;
+      }
+
+      res.send(value).end();
+    },
+    environmentVariables: {
+      API_ENDPOINT: pulumiConfig.get("apiEndpoint"), // Optional
+      FIRESTORE_COLLECTION: projectStackName,
+      FIRESTORE_DOCUMENT: totalSupplyFirestoreDocumentName,
+    },
+    runtime: "nodejs20",
+  },
+  { dependsOn: [serviceCloudFunctions, serviceCloudBuild, totalSupplyFirestoreDocument] },
 );
 
 /**
@@ -93,55 +132,70 @@ const firebaseProject = new gcp.firebase.Project(
   },
 );
 
-const firebaseHostingSite = new gcp.firebase.HostingSite(
-  "coingecko-api",
-  {
-    project: firebaseProject.project,
-    siteId: `olympusdao-${projectStackName}`, // Will end up as olympusdao-coingecko-api-<stack>.web.app
-  },
-  {
-    dependsOn: [firebaseProject],
-  },
-);
+const createFirebaseDeployment = (firebaseProject: gcp.firebase.Project, cloudFunction: gcp.cloudfunctions.HttpCallbackFunction, siteId: string): [gcp.firebase.HostingSite] => {
+  const firebaseHostingSite = new gcp.firebase.HostingSite(
+    siteId,
+    {
+      project: firebaseProject.project,
+      siteId: siteId, // Will end up as siteId.web.app
+    },
+    {
+      dependsOn: [firebaseProject],
+    },
+  );
 
-const firebaseSiteId = firebaseHostingSite.siteId;
-if (!firebaseSiteId) {
-  throw new Error("Firebase Hosting site ID is undefined");
+  const firebaseSiteId = firebaseHostingSite.siteId;
+  if (!firebaseSiteId) {
+    throw new Error("Firebase Hosting site ID is undefined");
+  }
+
+  const firebaseSiteIdInput: pulumi.Input<string> = firebaseSiteId.apply(str => `${str}`);
+
+  // Create a rewrite rule to redirect all requests to the Cloud Function
+  const firebaseHostingVersion = new gcp.firebase.HostingVersion(
+    siteId,
+    {
+      siteId: firebaseSiteIdInput,
+      config: {
+        redirects: [
+          {
+            glob: "/",
+            location: cloudFunction.httpsTriggerUrl,
+            statusCode: 302,
+          },
+        ],
+      },
+    },
+    {
+      dependsOn: [firebaseHostingSite, cloudFunction],
+    },
+  );
+
+  const firebaseHostingRelease = new gcp.firebase.HostingRelease(
+    siteId,
+    {
+      siteId: firebaseSiteIdInput,
+      versionName: firebaseHostingVersion.name,
+      message: "Cloud Functions integration",
+    },
+    {
+      dependsOn: [firebaseHostingVersion],
+    },
+  );
+
+  return [firebaseHostingSite];
 }
 
-const firebaseSiteIdInput: pulumi.Input<string> = firebaseSiteId.apply(str => `${str}`);
+// Create an endpoint for the circulating supply
+// siteId will end up as olympus-coingecko-api-<stack>-circulating-supply.web.app
+const [circulatingSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, circulatingSupplyCloudFunction, `olympus-${projectStackName}-circulating-supply`);
 
-// Create a rewrite rule to redirect all requests to the Cloud Function
-const firebaseHostingVersion = new gcp.firebase.HostingVersion(
-  projectStackName,
-  {
-    siteId: firebaseSiteIdInput,
-    config: {
-      redirects: [
-        {
-          glob: "/",
-          location: cloudFunction.httpsTriggerUrl,
-          statusCode: 302,
-        },
-      ],
-    },
-  },
-  {
-    dependsOn: [firebaseHostingSite, cloudFunction],
-  },
-);
+// Create an endpoint for the total supply
+// siteId will end up as olympus-coingecko-api-<stack>-total-supply.web.app
+const [totalSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, totalSupplyCloudFunction, `olympus-${projectStackName}-total-supply`);
 
-const firebaseHostingRelease = new gcp.firebase.HostingRelease(
-  projectStackName,
-  {
-    siteId: firebaseSiteIdInput,
-    versionName: firebaseHostingVersion.name,
-    message: "Cloud Functions integration",
-  },
-  {
-    dependsOn: [firebaseHostingVersion],
-  },
-);
+export const circulatingSupplyCloudFunctionTriggerUrl = circulatingSupplyCloudFunction.httpsTriggerUrl;
+export const circulatingSupplyFirebaseHostingUrl = circulatingSupplyFirebaseHostingSite.defaultUrl;
 
-export const cloudFunctionTriggerUrl = cloudFunction.httpsTriggerUrl;
-export const firebaseHostingUrl = firebaseHostingSite.defaultUrl;
+export const totalSupplyCloudFunctionTriggerUrl = totalSupplyCloudFunction.httpsTriggerUrl;
+export const totalSupplyFirebaseHostingUrl = totalSupplyFirebaseHostingSite.defaultUrl;

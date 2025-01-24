@@ -31,7 +31,9 @@ const getFirestoreDocument = async (): Promise<firestore.DocumentSnapshot<CacheD
 };
 
 /**
- *  Obtains the value from the cache.
+ * Obtains the value from the cache.
+ *
+ * NOTE: if there are multiple cached values being stored in the database, they must be stored under different document names
  *
  * @returns [value, isCacheValid]
  */
