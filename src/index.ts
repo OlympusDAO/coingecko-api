@@ -1,7 +1,7 @@
 import * as gcp from "@pulumi/gcp";
 import * as pulumi from "@pulumi/pulumi";
 
-import { getValue } from "./app";
+import { getCirculatingSupplyValue } from "./app";
 
 const pulumiConfig = new pulumi.Config();
 const gcpConfig = new pulumi.Config("gcp");
@@ -57,7 +57,7 @@ const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
     callback: async (req: any, res: any) => {
       console.log("Received request");
       const cache: string | undefined = req.query.cache;
-      const value = await getValue(cache);
+      const value = await getCirculatingSupplyValue(cache);
 
       if (!value) {
         res.status(500).send("Error fetching circulating supply");

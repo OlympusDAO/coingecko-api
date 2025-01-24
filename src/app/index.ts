@@ -1,7 +1,7 @@
 import { getCachedValue, setCachedValue } from "./cache/cache";
 import { getCirculatingSupply } from "./query";
 
-export const getValue = async (cache: string | undefined): Promise<string | null> => {
+export const getCirculatingSupplyValue = async (cache: string | undefined): Promise<string | null> => {
   const skipCache = cache === "false";
 
   // Return the cached value if still valid

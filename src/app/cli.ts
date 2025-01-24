@@ -1,7 +1,7 @@
-import { getValue } from ".";
+import { getCirculatingSupplyValue } from ".";
 
 const main = async () => {
-  const value = await getValue("true");
+  const value = await getCirculatingSupplyValue("true");
   console.log(`Value = ${value}`);
 };
 
