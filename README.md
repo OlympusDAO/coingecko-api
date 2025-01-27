@@ -23,6 +23,14 @@ When the function's trigger URL is hit, the following are performed:
 1. If there is no valid cached value, an API query is performed. If successful, the cache is updated and the value is returned.
 1. If no value is returned by the API query, HTTP status 500 is returned by the function.
 
+## Service Account
+
+A GCP service account is required for deployment. The name of the file should correspond to the name specified in the Pulumi config file (e.g. `Pulumi.prod.yaml`). The role of the service account should be set to "Owner" for the project.
+
+TODO: determine if a more restrictive role can be used.
+
+A key then needs to be created for the service account and saved to a JSON file. This can then be referenced in the Pulumi config file. The JSON file should NOT be committed to the repo.
+
 ## Deployment
 
 Deployment is handled by Pulumi, with hosting on GCP.
