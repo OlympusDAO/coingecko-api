@@ -52,7 +52,7 @@ export const getTotalSupply = async (): Promise<string | null> => {
   }
 
   return returnValue;
-}
+};
 
 export const getCirculatingSupply = async (): Promise<string | null> => {
   const apiEndpointOverride = process.env.API_ENDPOINT;

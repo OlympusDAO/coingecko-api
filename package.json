@@ -27,6 +27,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "lint": "eslint --fix src/**/*.ts",
     "start": "ts-node src/app/cli.ts"
   }
 }
