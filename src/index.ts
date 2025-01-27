@@ -190,18 +190,12 @@ const createFirebaseDeployment = (firebaseProject: gcp.firebase.Project, cloudFu
 // siteId will end up as olympus-metrics-<stack>-circulating-supply.web.app
 const [circulatingSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, circulatingSupplyCloudFunction, `olympus-${projectStackName}-circulating-supply`);
 
-// For backwards compatibility, we also create an endpoint for the circulating supply
-// siteId will end up as olympusdao-coingecko-api-<stack>.web.app
-const oldCirculatingSupplySiteId = pulumi.getStack() === "dev" ? "olympus-metrics-api-dev" : `olympusdao-coingecko-api-${pulumi.getStack()}`; // Workaround for unavailable subdomain
-const [oldCirculatingSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, circulatingSupplyCloudFunction, oldCirculatingSupplySiteId);
-
 // Create an endpoint for the total supply
 // siteId will end up as olympus-metrics-<stack>-total-supply.web.app
 const [totalSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, totalSupplyCloudFunction, `olympus-${projectStackName}-total-supply`);
 
 export const circulatingSupplyCloudFunctionTriggerUrl = circulatingSupplyCloudFunction.httpsTriggerUrl;
 export const circulatingSupplyFirebaseHostingUrl = circulatingSupplyFirebaseHostingSite.defaultUrl;
-export const oldCirculatingSupplyFirebaseHostingUrl = oldCirculatingSupplyFirebaseHostingSite.defaultUrl;
 
 export const totalSupplyCloudFunctionTriggerUrl = totalSupplyCloudFunction.httpsTriggerUrl;
 export const totalSupplyFirebaseHostingUrl = totalSupplyFirebaseHostingSite.defaultUrl;
