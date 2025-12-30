@@ -132,7 +132,8 @@ const firebaseProject = new gcp.firebase.Project(
   },
 );
 
-const createFirebaseDeployment = (firebaseProject: gcp.firebase.Project, cloudFunction: gcp.cloudfunctions.HttpCallbackFunction, siteId: string): [gcp.firebase.HostingSite] => {
+const createFirebaseDeployment = (firebaseProject: gcp.firebase.Project, cloudFunction: gcp.cloudfunctions.HttpCallbackFunction, siteId: string, domain?: string): [gcp.firebase.HostingSite] => {
+  // Define the base site
   const firebaseHostingSite = new gcp.firebase.HostingSite(
     siteId,
     {
@@ -150,6 +151,17 @@ const createFirebaseDeployment = (firebaseProject: gcp.firebase.Project, cloudFu
   }
 
   const firebaseSiteIdInput: pulumi.Input<string> = firebaseSiteId.apply(str => `${str}`);
+
+  // If a domain is provided, create a custom domain
+  if (domain) {
+    const firebaseHostingCustomDomain = new gcp.firebase.HostingCustomDomain(
+      siteId,
+      {
+        siteId: siteId,
+        customDomain: domain,
+      },
+    );
+  };
 
   // Create a rewrite rule to redirect all requests to the Cloud Function
   const firebaseHostingVersion = new gcp.firebase.HostingVersion(
@@ -186,13 +198,25 @@ const createFirebaseDeployment = (firebaseProject: gcp.firebase.Project, cloudFu
   return [firebaseHostingSite];
 }
 
+const getCustomDomain = (functionName: string, stack: string): string => {
+  if (stack === "prod") {
+    return `${functionName}.api.olympusdao.finance`;
+  }
+
+  if (stack === "dev") {
+    return `${functionName}.staging.api.olympusdao.finance`;
+  }
+
+  throw new Error(`Unknown stack: ${stack}`);
+}
+
 // Create an endpoint for the circulating supply
 // siteId will end up as olympus-metrics-<stack>-circulating-supply.web.app
-const [circulatingSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, circulatingSupplyCloudFunction, `olympus-${projectStackName}-circulating-supply`);
+const [circulatingSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, circulatingSupplyCloudFunction, `olympus-${projectStackName}-circulating-supply`, getCustomDomain("circulating-supply", pulumi.getStack()));
 
 // Create an endpoint for the total supply
 // siteId will end up as olympus-metrics-<stack>-total-supply.web.app
-const [totalSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, totalSupplyCloudFunction, `olympus-${projectStackName}-total-supply`);
+const [totalSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, totalSupplyCloudFunction, `olympus-${projectStackName}-total-supply`, getCustomDomain("total-supply", pulumi.getStack()));
 
 export const circulatingSupplyCloudFunctionTriggerUrl = circulatingSupplyCloudFunction.httpsTriggerUrl;
 export const circulatingSupplyFirebaseHostingUrl = circulatingSupplyFirebaseHostingSite.defaultUrl;
