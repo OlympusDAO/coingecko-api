@@ -27,9 +27,9 @@ export const getTotalSupply = async (): Promise<string | null> => {
     else {
       // Check that the timestamps for Ethereum and Arbitrum within the past 8 hours
       const now = new Date().getTime();
-      const eightHoursAgoMilliseconds = now - 8 * 60 * 60 * 1000;
-      const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > eightHoursAgoMilliseconds;
-      const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > eightHoursAgoMilliseconds;
+      const timestampThreshold = now - 24 * 60 * 60 * 1000;
+      const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > timestampThreshold;
+      const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > timestampThreshold;
 
       console.log(`Arbitrum timestamp: ${response.data.timestamps.Arbitrum}`);
       console.log(`Ethereum timestamp: ${response.data.timestamps.Ethereum}`);
@@ -78,11 +78,11 @@ export const getCirculatingSupply = async (): Promise<string | null> => {
     }
     // Has data
     else {
-      // Check that the timestamps for Ethereum and Arbitrum within the past 8 hours
+      // Check that the timestamps for Ethereum and Arbitrum within the past 24 hours
       const now = new Date().getTime();
-      const eightHoursAgoMilliseconds = now - 8 * 60 * 60 * 1000;
-      const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > eightHoursAgoMilliseconds;
-      const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > eightHoursAgoMilliseconds;
+      const timestampThreshold = now - 24 * 60 * 60 * 1000;
+      const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > timestampThreshold;
+      const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > timestampThreshold;
 
       console.log(`Arbitrum timestamp: ${response.data.timestamps.Arbitrum}`);
       console.log(`Ethereum timestamp: ${response.data.timestamps.Ethereum}`);
