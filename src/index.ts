@@ -30,7 +30,7 @@ const firestoreDatabase = new gcp.firestore.Database(
   {
     name: "(default)",
     type: "FIRESTORE_NATIVE",
-    locationId: gcpConfig.require("region"),
+    locationId: "us-east1", // For historical reasons
   },
   {
     protect: true,
@@ -53,7 +53,7 @@ const circulatingSupplyFirestoreDocument = new gcp.firestore.Document(
 
 // Deploy Cloud HttpCallback Function
 const circulatingSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
-  `${projectStackName}-circulating-supply`,
+  `${projectStackName}-${gcpConfig.require("region")}-circulating-supply`,
   {
     callback: async (req: any, res: any) => {
       console.log("Received request");
@@ -73,6 +73,7 @@ const circulatingSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFuncti
       FIRESTORE_DOCUMENT: circulatingSupplyFirestoreDocumentName,
     },
     runtime: "nodejs20",
+    location: gcpConfig.require("region"),
   },
   { dependsOn: [serviceCloudFunctions, serviceCloudBuild, circulatingSupplyFirestoreDocument] },
 );
@@ -91,7 +92,7 @@ const totalSupplyFirestoreDocument = new gcp.firestore.Document(
 
 // Create a Cloud Function for the total supply
 const totalSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
-  `${projectStackName}-total-supply`,
+  `${projectStackName}-${gcpConfig.require("region")}-total-supply`,
   {
     callback: async (req: any, res: any) => {
       console.log("Received request");
@@ -111,6 +112,7 @@ const totalSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
       FIRESTORE_DOCUMENT: totalSupplyFirestoreDocumentName,
     },
     runtime: "nodejs20",
+    location: gcpConfig.require("region"),
   },
   { dependsOn: [serviceCloudFunctions, serviceCloudBuild, totalSupplyFirestoreDocument] },
 );
@@ -169,11 +171,11 @@ const createFirebaseDeployment = (firebaseProject: gcp.firebase.Project, cloudFu
     {
       siteId: firebaseSiteIdInput,
       config: {
-        redirects: [
+        rewrites: [
           {
             glob: "/",
-            location: cloudFunction.httpsTriggerUrl,
-            statusCode: 302,
+            // NOTE: this requires the Cloud Function to be deployed in us-central1
+            function: cloudFunction.function.name,
           },
         ],
       },
