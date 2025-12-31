@@ -1,11 +1,11 @@
 import * as gcp from "@pulumi/gcp";
 import * as pulumi from "@pulumi/pulumi";
 
-import { getValue } from "./app";
+import { getCirculatingSupplyValue, getTotalSupplyValue } from "./app";
 
 const pulumiConfig = new pulumi.Config();
 const gcpConfig = new pulumi.Config("gcp");
-const PROJECT_NAME = "coingecko-api";
+const PROJECT_NAME = "metrics";
 
 // Enable required APIs
 const serviceCloudFunctions = new gcp.projects.Service("cloudfunctions", {
@@ -30,34 +30,35 @@ const firestoreDatabase = new gcp.firestore.Database(
   {
     name: "(default)",
     type: "FIRESTORE_NATIVE",
-    locationId: gcpConfig.require("region"),
+    locationId: "us-east1", // For historical reasons
   },
   {
     protect: true,
+    dependsOn: [serviceFirestore],
   },
 );
 
 // Create a document in Cloud Datastore to use for caching
 const projectStackName = `${PROJECT_NAME}-${pulumi.getStack()}`;
-const firestoreDocumentName = "cache";
-const firestoreDocument = new gcp.firestore.Document(
-  projectStackName,
+const circulatingSupplyFirestoreDocumentName = "cache";
+const circulatingSupplyFirestoreDocument = new gcp.firestore.Document(
+  `${projectStackName}-circulating-supply`,
   {
     collection: projectStackName,
-    documentId: firestoreDocumentName,
+    documentId: circulatingSupplyFirestoreDocumentName,
     fields: "",
   },
   { dependsOn: [serviceFirestore, firestoreDatabase] },
 );
 
 // Deploy Cloud HttpCallback Function
-const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
-  projectStackName,
+const circulatingSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
+  `${projectStackName}-${gcpConfig.require("region")}-circulating-supply`,
   {
     callback: async (req: any, res: any) => {
       console.log("Received request");
       const cache: string | undefined = req.query.cache;
-      const value = await getValue(cache);
+      const value = await getCirculatingSupplyValue(cache);
 
       if (!value) {
         res.status(500).send("Error fetching circulating supply");
@@ -69,11 +70,51 @@ const cloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
     environmentVariables: {
       API_ENDPOINT: pulumiConfig.get("apiEndpoint"), // Optional
       FIRESTORE_COLLECTION: projectStackName,
-      FIRESTORE_DOCUMENT: firestoreDocumentName,
+      FIRESTORE_DOCUMENT: circulatingSupplyFirestoreDocumentName,
     },
-    runtime: "nodejs16",
+    runtime: "nodejs20",
+    location: gcpConfig.require("region"),
   },
-  { dependsOn: [serviceCloudFunctions, serviceCloudBuild, firestoreDocument] },
+  { dependsOn: [serviceCloudFunctions, serviceCloudBuild, circulatingSupplyFirestoreDocument] },
+);
+
+// Create a document in Firestore for the total supply
+const totalSupplyFirestoreDocumentName = "total-supply";
+const totalSupplyFirestoreDocument = new gcp.firestore.Document(
+  `${projectStackName}-total-supply`,
+  {
+    collection: projectStackName,
+    documentId: totalSupplyFirestoreDocumentName,
+    fields: "",
+  },
+  { dependsOn: [serviceFirestore, firestoreDatabase] },
+);
+
+// Create a Cloud Function for the total supply
+const totalSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
+  `${projectStackName}-${gcpConfig.require("region")}-total-supply`,
+  {
+    callback: async (req: any, res: any) => {
+      console.log("Received request");
+      const cache: string | undefined = req.query.cache;
+      const value = await getTotalSupplyValue(cache);
+
+      if (!value) {
+        res.status(500).send("Error fetching total supply");
+        return;
+      }
+
+      res.send(value).end();
+    },
+    environmentVariables: {
+      API_ENDPOINT: pulumiConfig.get("apiEndpoint"), // Optional
+      FIRESTORE_COLLECTION: projectStackName,
+      FIRESTORE_DOCUMENT: totalSupplyFirestoreDocumentName,
+    },
+    runtime: "nodejs20",
+    location: gcpConfig.require("region"),
+  },
+  { dependsOn: [serviceCloudFunctions, serviceCloudBuild, totalSupplyFirestoreDocument] },
 );
 
 /**
@@ -93,55 +134,94 @@ const firebaseProject = new gcp.firebase.Project(
   },
 );
 
-const firebaseHostingSite = new gcp.firebase.HostingSite(
-  "coingecko-api",
-  {
-    project: firebaseProject.project,
-    siteId: `olympusdao-${projectStackName}`, // Will end up as olympusdao-coingecko-api-<stack>.web.app
-  },
-  {
-    dependsOn: [firebaseProject],
-  },
-);
+const createFirebaseDeployment = (firebaseProject: gcp.firebase.Project, cloudFunction: gcp.cloudfunctions.HttpCallbackFunction, siteId: string, domain?: string): [gcp.firebase.HostingSite] => {
+  // Define the base site
+  const firebaseHostingSite = new gcp.firebase.HostingSite(
+    siteId,
+    {
+      project: firebaseProject.project,
+      siteId: siteId, // Will end up as siteId.web.app
+    },
+    {
+      dependsOn: [firebaseProject],
+    },
+  );
 
-const firebaseSiteId = firebaseHostingSite.siteId;
-if (!firebaseSiteId) {
-  throw new Error("Firebase Hosting site ID is undefined");
+  const firebaseSiteId = firebaseHostingSite.siteId;
+  if (!firebaseSiteId) {
+    throw new Error("Firebase Hosting site ID is undefined");
+  }
+
+  const firebaseSiteIdInput: pulumi.Input<string> = firebaseSiteId.apply(str => `${str}`);
+
+  // If a domain is provided, create a custom domain
+  if (domain) {
+    const firebaseHostingCustomDomain = new gcp.firebase.HostingCustomDomain(
+      siteId,
+      {
+        siteId: siteId,
+        customDomain: domain,
+      },
+    );
+  };
+
+  // Create a rewrite rule to redirect all requests to the Cloud Function
+  const firebaseHostingVersion = new gcp.firebase.HostingVersion(
+    siteId,
+    {
+      siteId: firebaseSiteIdInput,
+      config: {
+        rewrites: [
+          {
+            glob: "/",
+            // NOTE: this requires the Cloud Function to be deployed in us-central1
+            function: cloudFunction.function.name,
+          },
+        ],
+      },
+    },
+    {
+      dependsOn: [firebaseHostingSite, cloudFunction],
+    },
+  );
+
+  const firebaseHostingRelease = new gcp.firebase.HostingRelease(
+    siteId,
+    {
+      siteId: firebaseSiteIdInput,
+      versionName: firebaseHostingVersion.name,
+      message: "Cloud Functions integration",
+    },
+    {
+      dependsOn: [firebaseHostingVersion],
+    },
+  );
+
+  return [firebaseHostingSite];
 }
 
-const firebaseSiteIdInput: pulumi.Input<string> = firebaseSiteId.apply(str => `${str}`);
+const getCustomDomain = (functionName: string, stack: string): string => {
+  if (stack === "prod") {
+    return `${functionName}.api.olympusdao.finance`;
+  }
 
-// Create a rewrite rule to redirect all requests to the Cloud Function
-const firebaseHostingVersion = new gcp.firebase.HostingVersion(
-  projectStackName,
-  {
-    siteId: firebaseSiteIdInput,
-    config: {
-      redirects: [
-        {
-          glob: "/",
-          location: cloudFunction.httpsTriggerUrl,
-          statusCode: 302,
-        },
-      ],
-    },
-  },
-  {
-    dependsOn: [firebaseHostingSite, cloudFunction],
-  },
-);
+  if (stack === "dev") {
+    return `${functionName}.staging.api.olympusdao.finance`;
+  }
 
-const firebaseHostingRelease = new gcp.firebase.HostingRelease(
-  projectStackName,
-  {
-    siteId: firebaseSiteIdInput,
-    versionName: firebaseHostingVersion.name,
-    message: "Cloud Functions integration",
-  },
-  {
-    dependsOn: [firebaseHostingVersion],
-  },
-);
+  throw new Error(`Unknown stack: ${stack}`);
+}
 
-export const cloudFunctionTriggerUrl = cloudFunction.httpsTriggerUrl;
-export const firebaseHostingUrl = firebaseHostingSite.defaultUrl;
+// Create an endpoint for the circulating supply
+// siteId will end up as olympus-metrics-<stack>-circulating-supply.web.app
+const [circulatingSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, circulatingSupplyCloudFunction, `olympus-${projectStackName}-circulating-supply`, getCustomDomain("circulating-supply", pulumi.getStack()));
+
+// Create an endpoint for the total supply
+// siteId will end up as olympus-metrics-<stack>-total-supply.web.app
+const [totalSupplyFirebaseHostingSite] = createFirebaseDeployment(firebaseProject, totalSupplyCloudFunction, `olympus-${projectStackName}-total-supply`, getCustomDomain("total-supply", pulumi.getStack()));
+
+export const circulatingSupplyCloudFunctionTriggerUrl = circulatingSupplyCloudFunction.httpsTriggerUrl;
+export const circulatingSupplyFirebaseHostingUrl = circulatingSupplyFirebaseHostingSite.defaultUrl;
+
+export const totalSupplyCloudFunctionTriggerUrl = totalSupplyCloudFunction.httpsTriggerUrl;
+export const totalSupplyFirebaseHostingUrl = totalSupplyFirebaseHostingSite.defaultUrl;

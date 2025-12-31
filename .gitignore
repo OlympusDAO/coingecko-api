@@ -1,4 +1,4 @@
 /bin/
 /node_modules/
-gcp_credentials.json
+gcp_credentials*.json
 .env

@@ -1,4 +1,4 @@
 config:
-  gcp:project: coingecko-api-382821
-  gcp:region: us-east1
-  gcp:credentials: gcp_credentials.json
+  gcp:project: coingecko-api-dev
+  gcp:region: us-central1
+  gcp:credentials: gcp_credentials_dev.json

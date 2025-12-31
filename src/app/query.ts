@@ -1,7 +1,7 @@
 import { createClient } from "@olympusdao/treasury-subgraph-client";
 import { fetch } from "cross-fetch";
 
-export const getCirculatingSupply = async (): Promise<string | null> => {
+export const getTotalSupply = async (): Promise<string | null> => {
   const apiEndpointOverride = process.env.API_ENDPOINT;
   if (apiEndpointOverride) {
     console.log(`Overriding API endpoint with ${apiEndpointOverride}`);
@@ -27,9 +27,62 @@ export const getCirculatingSupply = async (): Promise<string | null> => {
     else {
       // Check that the timestamps for Ethereum and Arbitrum within the past 8 hours
       const now = new Date().getTime();
-      const eightHoursAgoMilliseconds = now - 8 * 60 * 60 * 1000;
-      const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > eightHoursAgoMilliseconds;
-      const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > eightHoursAgoMilliseconds;
+      const timestampThreshold = now - 24 * 60 * 60 * 1000;
+      const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > timestampThreshold;
+      const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > timestampThreshold;
+
+      console.log(`Arbitrum timestamp: ${response.data.timestamps.Arbitrum}`);
+      console.log(`Ethereum timestamp: ${response.data.timestamps.Ethereum}`);
+
+      // If either timestamp is invalid, return null
+      if (!isEthereumTimestampValid || !isArbitrumTimestampValid) {
+        console.error(`Arbitrum or Ethereum timestamps were out of range`);
+        returnValue = null;
+      }
+      // Return the total supply
+      else {
+        console.log(`Arbitrum and Ethereum timestamps are within range`);
+        returnValue = response.data.ohmTotalSupply.toString();
+      }
+    }
+  } catch (error) {
+    console.error(`Error fetching total supply: ${error}`);
+
+    returnValue = null;
+  }
+
+  return returnValue;
+};
+
+export const getCirculatingSupply = async (): Promise<string | null> => {
+  const apiEndpointOverride = process.env.API_ENDPOINT;
+  if (apiEndpointOverride) {
+    console.log(`Overriding API endpoint with ${apiEndpointOverride}`);
+  }
+
+  const client = createClient({
+    ...(apiEndpointOverride ? { baseURL: apiEndpointOverride } : {}),
+    customFetch: fetch,
+  });
+
+  let returnValue: string | null;
+  try {
+    const response = await client.query({
+      operationName: "latest/metrics",
+    });
+
+    // No data - return null
+    if (!response.data) {
+      console.error(`No data returned from API`);
+      returnValue = null;
+    }
+    // Has data
+    else {
+      // Check that the timestamps for Ethereum and Arbitrum within the past 24 hours
+      const now = new Date().getTime();
+      const timestampThreshold = now - 24 * 60 * 60 * 1000;
+      const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > timestampThreshold;
+      const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > timestampThreshold;
 
       console.log(`Arbitrum timestamp: ${response.data.timestamps.Arbitrum}`);
       console.log(`Ethereum timestamp: ${response.data.timestamps.Ethereum}`);
