@@ -115,9 +115,6 @@ importers:
       '@olympusdao/treasury-subgraph-client':
         specifier: ^2.0.0
         version: 2.0.0
-      cross-fetch:
-        specifier: ^3.1.5
-        version: 3.1.8(encoding@0.1.13)
     devDependencies:
       '@opentelemetry/api-metrics':
         specifier: ^0.33.0
@@ -864,9 +861,6 @@ packages:
 
   create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
-
-  cross-fetch@3.1.8:
-    resolution: {integrity: sha512-cvA+JwZoU0Xq+h6WkMvAUqPEYy92Obet6UdKLfW60qn99ftItKjB5T+BkyWOFWe2pUyfQ+IJHmpOTznqk1M6Kg==}
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -3339,12 +3333,6 @@ snapshots:
   common-ancestor-path@1.0.1: {}
 
   create-require@1.1.1: {}
-
-  cross-fetch@3.1.8(encoding@0.1.13):
-    dependencies:
-      node-fetch: 2.7.0(encoding@0.1.13)
-    transitivePeerDependencies:
-      - encoding
 
   cross-spawn@7.0.6:
     dependencies:
