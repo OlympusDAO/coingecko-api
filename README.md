@@ -17,8 +17,7 @@ This is a very simple app, architected in the following way:
 When the function's trigger URL is hit, the following are performed:
 
 1. Check if there is a value in the cache (Firestore) and returns it, if so.
-
-    - Values are currently cached for 1 hour, in order to reduce queries to the GraphQL endpoint (which incur a charge).
+   - Values are currently cached for 1 hour, in order to reduce queries to the GraphQL endpoint (which incur a charge).
 
 1. If there is no valid cached value, an API query is performed. If successful, the cache is updated and the value is returned.
 1. If no value is returned by the API query, HTTP status 500 is returned by the function.
@@ -34,6 +33,8 @@ A key then needs to be created for the service account and saved to a JSON file.
 ## Deployment
 
 Deployment is handled by Pulumi, with hosting on GCP.
+
+This repo uses pnpm with `node-linker=hoisted` in `.npmrc` to avoid Pulumi closure loading errors like `Error: package.json export path for ".pnpm/..." not found`. If you hit that issue in another Pulumi repo using pnpm, try the hoisted linker layout before changing application code.
 
 To deploy:
 
