@@ -49,3 +49,4 @@ If the GCP project is shared between stacks, you may need to import the default 
 ## Notes
 
 - To force the deployed function to ignore the cache, append `?cache=false` to the URL
+- The Cloud Functions runtime is pinned to `nodejs22` because this project uses Cloud Functions v1 resources.
