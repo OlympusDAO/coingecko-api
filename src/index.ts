@@ -52,6 +52,8 @@ const circulatingSupplyFirestoreDocument = new gcp.firestore.Document(
 );
 
 // Deploy Cloud HttpCallback Function
+const functionRuntime = "nodejs22"; // Cloud Functions v1 is currently restricted to Node.js 22.
+
 const circulatingSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
   `${projectStackName}-${gcpConfig.require("region")}-circulating-supply`,
   {
@@ -72,7 +74,7 @@ const circulatingSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFuncti
       FIRESTORE_COLLECTION: projectStackName,
       FIRESTORE_DOCUMENT: circulatingSupplyFirestoreDocumentName,
     },
-    runtime: "nodejs24",
+    runtime: functionRuntime,
     location: gcpConfig.require("region"),
   },
   { dependsOn: [serviceCloudFunctions, serviceCloudBuild, circulatingSupplyFirestoreDocument] },
@@ -111,7 +113,7 @@ const totalSupplyCloudFunction = new gcp.cloudfunctions.HttpCallbackFunction(
       FIRESTORE_COLLECTION: projectStackName,
       FIRESTORE_DOCUMENT: totalSupplyFirestoreDocumentName,
     },
-    runtime: "nodejs24",
+    runtime: functionRuntime,
     location: gcpConfig.require("region"),
   },
   { dependsOn: [serviceCloudFunctions, serviceCloudBuild, totalSupplyFirestoreDocument] },
