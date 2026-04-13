@@ -23,23 +23,21 @@ export const getTotalSupply = async (): Promise<string | null> => {
     }
     // Has data
     else {
-      // Check that the timestamps for Ethereum and Arbitrum within the past 8 hours
+      // Check that the Ethereum timestamp is within the past 24 hours
       const now = new Date().getTime();
       const timestampThreshold = now - 24 * 60 * 60 * 1000;
       const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > timestampThreshold;
-      const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > timestampThreshold;
 
-      console.log(`Arbitrum timestamp: ${response.data.timestamps.Arbitrum}`);
       console.log(`Ethereum timestamp: ${response.data.timestamps.Ethereum}`);
 
-      // If either timestamp is invalid, return null
-      if (!isEthereumTimestampValid || !isArbitrumTimestampValid) {
-        console.error(`Arbitrum or Ethereum timestamps were out of range`);
+      // If the Ethereum timestamp is invalid, return null
+      if (!isEthereumTimestampValid) {
+        console.error(`Ethereum timestamp was out of range`);
         returnValue = null;
       }
       // Return the total supply
       else {
-        console.log(`Arbitrum and Ethereum timestamps are within range`);
+        console.log(`Ethereum timestamp is within range`);
         returnValue = response.data.ohmTotalSupply.toString();
       }
     }
@@ -75,23 +73,21 @@ export const getCirculatingSupply = async (): Promise<string | null> => {
     }
     // Has data
     else {
-      // Check that the timestamps for Ethereum and Arbitrum within the past 24 hours
+      // Check that the Ethereum timestamp is within the past 24 hours
       const now = new Date().getTime();
       const timestampThreshold = now - 24 * 60 * 60 * 1000;
       const isEthereumTimestampValid = response.data.timestamps.Ethereum * 1000 > timestampThreshold;
-      const isArbitrumTimestampValid = response.data.timestamps.Arbitrum * 1000 > timestampThreshold;
 
-      console.log(`Arbitrum timestamp: ${response.data.timestamps.Arbitrum}`);
       console.log(`Ethereum timestamp: ${response.data.timestamps.Ethereum}`);
 
-      // If either timestamp is invalid, return null
-      if (!isEthereumTimestampValid || !isArbitrumTimestampValid) {
-        console.error(`Arbitrum or Ethereum timestamps were out of range`);
+      // If the Ethereum timestamp is invalid, return null
+      if (!isEthereumTimestampValid) {
+        console.error(`Ethereum timestamp was out of range`);
         returnValue = null;
       }
       // Return the circulating supply
       else {
-        console.log(`Arbitrum and Ethereum timestamps are within range`);
+        console.log(`Ethereum timestamp is within range`);
         returnValue = response.data.ohmCirculatingSupply.toString();
       }
     }
