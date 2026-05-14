@@ -2,3 +2,5 @@
 /node_modules/
 gcp_credentials*.json
 .env
+
+.pnpm-store/
