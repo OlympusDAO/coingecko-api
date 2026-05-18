@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This project serves the circulating supply of OHM to CoinGecko, so that it can be displayed accurately on the [token page](https://www.coingecko.com/en/coins/olympus).
+This project serves the circulating and total supply of OHM to CoinGecko, so that it can be displayed accurately on the [token page](https://www.coingecko.com/en/coins/olympus).
 
 ## Architecture
 
@@ -22,6 +22,49 @@ When the function's trigger URL is hit, the following are performed:
 1. If there is no valid cached value, an API query is performed. If successful, the cache is updated and the value is returned.
 1. If no value is returned by the API query, HTTP status 500 is returned by the function.
 
+## Requirements
+
+- Node.js 22 or newer. The expected version is recorded in `.nvmrc` and `.node-version`.
+- pnpm 10.33.0 or newer. The exact package manager version is recorded in `package.json`.
+- Pulumi CLI access for deployment tasks.
+- GCP credentials for the target stack when previewing or deploying infrastructure.
+
+## Common Tasks
+
+Install dependencies:
+
+```sh
+pnpm install
+```
+
+Run the TypeScript build:
+
+```sh
+pnpm run build
+```
+
+Check lint without writing fixes:
+
+```sh
+pnpm run lint:check
+```
+
+Run lint and apply automatic fixes:
+
+```sh
+pnpm run lint
+```
+
+Run the local CLI:
+
+```sh
+pnpm start
+```
+
+The CLI calls the circulating-supply path and uses the Firestore cache helper. For local runs, provide `FIRESTORE_COLLECTION` and `FIRESTORE_DOCUMENT`; set `API_ENDPOINT` only when overriding the default treasury-subgraph client endpoint. The Firestore client also needs usable local Google credentials, such as Application Default Credentials or a service account configured in the environment.
+
+This repository does not currently define a `test` script. Use `pnpm run lint:check` and `pnpm run build` as the baseline validation commands unless tests are added later.
+
 ## Service Account
 
 A GCP service account is required for deployment. The name of the file should correspond to the name specified in the Pulumi config file (e.g. `Pulumi.prod.yaml`). The role of the service account should be set to "Owner" for the project.
@@ -34,15 +77,28 @@ A key then needs to be created for the service account and saved to a JSON file.
 
 Deployment is handled by Pulumi, with hosting on GCP.
 
-This repo uses pnpm with `node-linker=hoisted` in `.npmrc` to avoid Pulumi closure loading errors like `Error: package.json export path for ".pnpm/..." not found`. If you hit that issue in another Pulumi repo using pnpm, try the hoisted linker layout before changing application code.
+This repo uses pnpm with `nodeLinker: hoisted` in `pnpm-workspace.yaml` to avoid Pulumi closure loading errors like `Error: package.json export path for ".pnpm/..." not found`. If you hit that issue in another Pulumi repo using pnpm, try the hoisted linker layout before changing application code.
+
+Stack config is kept in:
+
+- `Pulumi.dev.yaml`: development stack, GCP project `coingecko-api-dev`, region `us-central1`, credentials file `gcp_credentials_dev.json`
+- `Pulumi.prod.yaml`: production stack, GCP project `coingecko-api-382821`, region `us-central1`, credentials file `gcp_credentials.json`
 
 To deploy:
 
-1. Copy the `.env.sample` file and fill in any variables
-1. Obtain the JSON credentials file for the project's service account and save as `gcp_credentials.json`. Firebase requires a service account for deployment, hence the need to jump through this hoop.
-1. Run `pulumi stack select` and select/create the required stack
-1. Run `pulumi refresh` to grab the current state from GCP
+1. Install dependencies with `pnpm install`.
+1. Obtain the JSON credentials file for the project's service account and save it at the path referenced by the target stack config. Firebase requires a service account for deployment, hence the need to jump through this hoop.
+1. Run `pulumi stack select dev` or `pulumi stack select prod`.
+1. Run `pulumi refresh` to sync Pulumi state with GCP.
+1. Run `pulumi preview` and review the planned changes.
 1. Run `pulumi up` to deploy.
+
+The Pulumi program deploys two Cloud Functions and Firebase Hosting rewrites:
+
+- `circulating-supply`: serves OHM circulating supply.
+- `total-supply`: serves OHM total supply.
+
+Production custom domains use `*.api.olympusdao.finance`; development custom domains use `*.staging.api.olympusdao.finance`.
 
 If the GCP project is shared between stacks, you may need to import the default Firestore database: `pulumi import gcp:firestore/database:Database default "(default)"`
 

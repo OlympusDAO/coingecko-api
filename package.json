@@ -28,8 +28,7 @@
     "build": "tsc",
     "lint": "eslint --fix src/**/*.ts",
     "lint:check": "eslint src/**/*.ts --quiet",
-    "start": "ts-node src/app/cli.ts",
-    "preinstall": "npx only-allow@1.2.2 pnpm"
+    "start": "ts-node src/app/cli.ts"
   },
   "engines": {
     "node": ">=22",
