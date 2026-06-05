@@ -1,5 +1,5 @@
-import { getCachedValue, setCachedValue } from "./cache/cache";
-import { getCirculatingSupply, getTotalSupply } from "./query";
+import { getCachedValue, setCachedValue } from "./cache/cache.js";
+import { getCirculatingSupply, getTotalSupply } from "./query.js";
 
 export const getCirculatingSupplyValue = async (cache: string | undefined): Promise<string | null> => {
   const skipCache = cache === "false";

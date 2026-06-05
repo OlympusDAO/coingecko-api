@@ -1,6 +1,6 @@
 import firestore, { Firestore } from "@google-cloud/firestore";
 
-import { getVariable } from "../environment/environment";
+import { getVariable } from "../environment/environment.js";
 
 const CACHE_EXPIRATION = 60 * 60 * 1000; // 1 hour
 

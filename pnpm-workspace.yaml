@@ -6,6 +6,7 @@ engineStrict: true
 strictDepBuilds: true
 blockExoticSubdeps: true
 onlyBuiltDependencies:
+  - "esbuild@0.28.0"
   - "protobufjs@7.5.8"
 overrides:
   "@babel/runtime@<7.26.10": "^7.26.10"

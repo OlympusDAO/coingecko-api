@@ -1,17 +1,4 @@
-import type { BoundsResponse, ClientConfig, DailyMetric } from "@olympusdao/treasury-subgraph-client";
-
-type TreasurySubgraphClientModule = {
-  createClient: (config?: ClientConfig) => {
-    getBounds: () => Promise<BoundsResponse>;
-    getDailyMetrics: (input: { start: string; end?: string }) => Promise<DailyMetric[]>;
-  };
-};
-
-const TREASURY_SUBGRAPH_CLIENT_PACKAGE = "@olympusdao/treasury-subgraph-client";
-// Keep TypeScript's CommonJS emit from downleveling dynamic import() to require().
-const importTreasurySubgraphClient = new Function("specifier", "return import(specifier)") as (
-  specifier: string,
-) => Promise<TreasurySubgraphClientModule>;
+import { createClient } from "@olympusdao/treasury-subgraph-client";
 
 const getSupplyValue = async (
   field: "ohmTotalSupply" | "ohmCirculatingSupply",
@@ -22,7 +9,6 @@ const getSupplyValue = async (
     console.log(`Overriding API endpoint with ${apiEndpointOverride}`);
   }
 
-  const { createClient } = await importTreasurySubgraphClient(TREASURY_SUBGRAPH_CLIENT_PACKAGE);
   const client = createClient({
     ...(apiEndpointOverride ? { baseUrl: apiEndpointOverride } : {}),
   });

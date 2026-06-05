@@ -1,7 +1,7 @@
 import * as gcp from "@pulumi/gcp";
 import * as pulumi from "@pulumi/pulumi";
 
-import { getCirculatingSupplyValue, getTotalSupplyValue } from "./app";
+import { getCirculatingSupplyValue, getTotalSupplyValue } from "./app/index.js";
 
 const pulumiConfig = new pulumi.Config();
 const gcpConfig = new pulumi.Config("gcp");
