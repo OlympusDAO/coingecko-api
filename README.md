@@ -29,6 +29,8 @@ When the function's trigger URL is hit, the following are performed:
 - Pulumi CLI access for deployment tasks.
 - GCP credentials for the target stack when previewing or deploying infrastructure.
 
+This project uses native ESM (`"type": "module"`). TypeScript is configured with NodeNext module resolution, so local relative imports in `src/**/*.ts` use `.js` specifiers even though the source files are `.ts`. The ESLint config remains CommonJS as `.eslintrc.cjs`.
+
 ## Common Tasks
 
 Install dependencies:

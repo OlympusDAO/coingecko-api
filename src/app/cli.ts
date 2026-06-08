@@ -1,4 +1,6 @@
-import { getCirculatingSupplyValue } from ".";
+import { fileURLToPath } from "node:url";
+
+import { getCirculatingSupplyValue } from "./index.js";
 
 const main = async () => {
   const value = await getCirculatingSupplyValue("true");
@@ -6,6 +8,6 @@ const main = async () => {
 };
 
 // If called from the command-line, trigger the getValue function in index.ts
-if (require.main === module) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main();
 }
