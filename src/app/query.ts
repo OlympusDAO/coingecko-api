@@ -26,7 +26,7 @@ const getSupplyValue = async (
     // Has data
     else {
       // Check that the Ethereum timestamp is within the past 24 hours
-      const now = new Date().getTime();
+      const now = Date.now();
       const timestampThreshold = now - 24 * 60 * 60 * 1000;
       const isEthereumTimestampValid = metric.timestamps.Ethereum * 1000 > timestampThreshold;
 

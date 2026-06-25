@@ -159,7 +159,7 @@ const createFirebaseDeployment = (
     throw new Error("Firebase Hosting site ID is undefined");
   }
 
-  const firebaseSiteIdInput: pulumi.Input<string> = firebaseSiteId.apply(str => `${str}`);
+  const firebaseSiteIdInput: pulumi.Input<string> = firebaseSiteId.apply((str) => `${str}`);
 
   // If a domain is provided, create a custom domain
   if (domain) {

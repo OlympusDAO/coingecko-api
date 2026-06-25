@@ -1,4 +1,5 @@
-import firestore, { Firestore } from "@google-cloud/firestore";
+import type firestore from "@google-cloud/firestore";
+import { Firestore } from "@google-cloud/firestore";
 
 import { getVariable } from "../environment/environment.js";
 
@@ -42,7 +43,7 @@ export const getCachedValue = async (): Promise<[string | null, boolean]> => {
   const data = await document.data();
 
   // If no or incomplete data
-  if (!data || !data.value || !data.timestamp) {
+  if (!data?.value || !data.timestamp) {
     console.log("Cache miss");
     return [null, false];
   }
