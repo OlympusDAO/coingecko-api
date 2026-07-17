@@ -1,8 +1,8 @@
 allowBuilds:
   # Reviewed install-time binary fetch for the TypeScript runtime resolved in the lockfile.
-  esbuild: true
+  "esbuild@0.28.1": true
   # Reviewed postinstall helper required by the patched protobufjs runtime.
-  protobufjs: true
+  "protobufjs@7.6.3": true
 auditConfig:
   ignoreGhsas:
     # Pulumi currently pins the OpenTelemetry 1.x stack; forcing core 2.x breaks `pulumi up`.
