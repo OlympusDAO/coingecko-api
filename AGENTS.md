@@ -8,7 +8,7 @@ This repository provides a thin API layer for serving Olympus OHM circulating-su
 
 - Node.js must use version 22+ because the deployed Cloud Functions runtime is pinned to `nodejs22`.
 - Use `.nvmrc` and `.node-version` files for version alignment.
-- Use pnpm 10.33.0 or newer. The exact package manager version is recorded in `package.json`.
+- Use pnpm 11.13.0 or newer. The exact package manager version is recorded in `package.json`.
 - Shared pnpm policy lives in `pnpm-workspace.yaml`, including `nodeLinker: hoisted` for Pulumi closure compatibility and `preferFrozenLockfile: true` for frozen lockfile installs.
 - Run `pnpm install` before dependency-dependent work.
 
