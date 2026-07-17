@@ -25,7 +25,7 @@ When the function's trigger URL is hit, the following are performed:
 ## Requirements
 
 - Node.js 22 or newer. The expected version is recorded in `.nvmrc` and `.node-version`.
-- pnpm 10.33.0 or newer. The exact package manager version is recorded in `package.json`.
+- pnpm 11.13.0 or newer. The exact package manager version is recorded in `package.json`.
 - Pulumi CLI access for deployment tasks.
 - GCP credentials for the target stack when previewing or deploying infrastructure.
 
