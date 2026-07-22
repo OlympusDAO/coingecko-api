@@ -6,7 +6,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.0",
     "@pulumi/gcp": "^9.18.0",
-    "@pulumi/pulumi": "^3.229.0",
+    "@pulumi/pulumi": "^3.253.0",
     "@types/node": "22.9.3",
     "ts-node": "^10.9.2",
     "tsx": "4.22.4",
