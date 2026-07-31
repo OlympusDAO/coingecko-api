@@ -3,10 +3,6 @@ allowBuilds:
   "esbuild@0.28.1": true
   # Reviewed postinstall helper required by the patched protobufjs runtime.
   "protobufjs@7.6.5": true
-auditConfig:
-  ignoreGhsas:
-    # Pulumi's OpenTelemetry compatibility is deployment-sensitive; removal requires `pulumi up` validation.
-    - GHSA-8988-4f7v-96qf
 blockExoticSubdeps: true
 engineStrict: true
 minimumReleaseAge: 10080
