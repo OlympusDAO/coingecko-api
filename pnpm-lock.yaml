@@ -14,7 +14,7 @@ overrides:
   diff@>=4.0.0 <4.0.4: ^4.0.4
   glob@<10.5.0: ^10.5.0
   google-gax>@grpc/grpc-js: ^1.12.7
-  ip-address@<10.1.1: ^10.1.1
+  ip-address@<=10.5.0: 10.5.1
   js-yaml@>=4.0.0 <4.3.2: 4.3.2
   jws@<4.0.1: ^4.0.1
   linkify-it@>=5.0.0 <5.0.2: ^5.0.2
@@ -1082,8 +1082,8 @@ packages:
     resolution: {integrity: sha512-IBTdIkzZNOpqm7q3dRqJvMaldXjDHWkEDfrwGEQTs5eaQMWV+djAhR+wahyNNMAa+qpbDUhBMVt4ZKNwpPm7xQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  ip-address@10.4.0:
-    resolution: {integrity: sha512-oSK96Grm3aP6OrS263xVxbNDGVL7rzBtYdpGqlDG8iQdoenDoTs/nkki+DflYbAEE8Xl6o5YxhxlrKvI3nqKXQ==}
+  ip-address@10.5.1:
+    resolution: {integrity: sha512-EXujUp9jyOI/chPgtqk6uy7fDq8AeCB/WlfEuPg9LN0fN9lzKAKfuDYi60SMhHwgUiEhZvVYsbGZN+RUU1INiA==}
     engines: {node: '>= 12'}
 
   is-fullwidth-code-point@3.0.0:
@@ -2798,7 +2798,7 @@ snapshots:
 
   ini@6.0.0: {}
 
-  ip-address@10.4.0: {}
+  ip-address@10.5.1: {}
 
   is-fullwidth-code-point@3.0.0: {}
 
@@ -3285,7 +3285,7 @@ snapshots:
 
   socks@2.8.3:
     dependencies:
-      ip-address: 10.4.0
+      ip-address: 10.5.1
       smart-buffer: 4.2.0
 
   source-map-support@0.5.21:
