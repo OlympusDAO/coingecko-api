@@ -5,26 +5,29 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@grpc/grpc-js@<1.8.22': ^1.8.22
-  '@grpc/grpc-js@>=1.12.0 <1.12.7': ^1.12.7
+  '@grpc/grpc-js@<1.8.22': 1.14.5
+  '@grpc/grpc-js@>=1.12.0 <1.12.7': 1.14.5
   '@protobufjs/utf8@<1.1.1': ^1.1.1
   '@sigstore/core@<=3.2.0': ^3.2.1
-  brace-expansion@>=2.0.0 <5.0.8: ^5.0.8
+  brace-expansion@>=2.0.0 <5.0.8: 5.0.12
   cross-spawn@<7.0.5: ^7.0.5
   diff@>=4.0.0 <4.0.4: ^4.0.4
   glob@<10.5.0: ^10.5.0
-  google-gax>@grpc/grpc-js: ^1.12.7
-  ip-address@<=10.5.0: 10.5.1
+  google-gax>@grpc/grpc-js: 1.14.5
+  http-cache-semantics@<=4.2.0: 4.3.0
+  ip-address@<=10.5.0: 10.7.1
   js-yaml@>=4.0.0 <4.3.2: 4.3.2
   jws@<4.0.1: ^4.0.1
   linkify-it@>=5.0.0 <5.0.2: ^5.0.2
   lodash@<4.18.0: ^4.18.0
   markdown-it@<14.1.1: ^14.1.1
   markdown-it@<=14.1.1: ^14.2.0
+  markdown-it@<14.3.1: 14.3.1
   minimatch@<9.0.7: ^9.0.7
   node-forge@<1.4.0: ^1.4.0
   pacote@<21.5.1: ^21.5.1
   picomatch@<3.0.2: ^3.0.2
+  postcss-selector-parser@<7.1.6: 7.1.6
   tinyglobby@0.2.15>picomatch@>=4.0.0: ^3.0.2
   protobufjs@>=7.0.0 <7.6.5: ^7.6.5
   protobufjs-cli@<1.2.1: ^1.2.1
@@ -311,8 +314,8 @@ packages:
     resolution: {integrity: sha512-JRpk06SmZXLGz0pNx1x7yU3YhkUXheKgH5hbDZ4kMsdhtfV5qPLJLRI4wv69K0cZorIk+zTMOwptue7hizo0eA==}
     engines: {node: '>=12.0.0'}
 
-  '@grpc/grpc-js@1.14.4':
-    resolution: {integrity: sha512-k9Dj3DV/itK9D06Y8f190Qgop7/Ui+D0njFV3LHMPwPT75DpXLQohE9Wmz0QElrJnzsjB7KPWiKJbOl7IPDArQ==}
+  '@grpc/grpc-js@1.14.5':
+    resolution: {integrity: sha512-7VZM+SVdEcUUqSQeNI3zM8Qs/BhQKZndPo2h5VkYkAM8Iz0wJIa8mKV5ekQGqG8UUsnkQ0NMxIxwkIHYvj0qOw==}
     engines: {node: '>=12.10.0'}
 
   '@grpc/proto-loader@0.7.13':
@@ -755,8 +758,8 @@ packages:
   bluebird@3.7.2:
     resolution: {integrity: sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==}
 
-  brace-expansion@5.0.9:
-    resolution: {integrity: sha512-ScQ4IuvIEF1TMlP7Zt+vjJ//9zlPb2SDcxWxM3bk8s6t6GGdJ7KO1dCcTidOPJKePW30LE/2cT7wCyPho9/Wxg==}
+  brace-expansion@5.0.12:
+    resolution: {integrity: sha512-YovQ3rzhaLMIrDjNDMkNS01tea93qhEhG5xy8f6+R0l+dw3Ki+5sCoIoI942iuLZTHWogWktgwVDhU09iNEimQ==}
     engines: {node: 20 || >=22}
 
   buffer-equal-constant-time@1.0.1:
@@ -1032,8 +1035,8 @@ packages:
     resolution: {integrity: sha512-M422h7o/BR3rmCQ8UHi7cyyMqKltdP9Uo+J2fXK+RSAY+wTcKOIRyhTuKv4qn+DJf3g+PL890AzId5KZpX+CBg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  http-cache-semantics@4.1.1:
-    resolution: {integrity: sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==}
+  http-cache-semantics@4.3.0:
+    resolution: {integrity: sha512-M5t5LlJpS1UHMjvwRQVdFHvPISGeLAxNcrWuJkeGh0KxsqCHZ1O3NXZU/8x7cD0BDcGW8kapxMKTvwlqrNkHkA==}
 
   http-proxy-agent@7.0.2:
     resolution: {integrity: sha512-T1gkAiYYDWYx3V5Bmyu7HcfcvL7mUrTWiM6yOfa3PIphViJ/gFPbvidQ+veqSOHci/PxBcDabeUNCzpOODJZig==}
@@ -1082,8 +1085,8 @@ packages:
     resolution: {integrity: sha512-IBTdIkzZNOpqm7q3dRqJvMaldXjDHWkEDfrwGEQTs5eaQMWV+djAhR+wahyNNMAa+qpbDUhBMVt4ZKNwpPm7xQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  ip-address@10.5.1:
-    resolution: {integrity: sha512-EXujUp9jyOI/chPgtqk6uy7fDq8AeCB/WlfEuPg9LN0fN9lzKAKfuDYi60SMhHwgUiEhZvVYsbGZN+RUU1INiA==}
+  ip-address@10.7.1:
+    resolution: {integrity: sha512-4OUAqU9Z1i3vCnS05hzGiFnEMDpQ+62pAD/MVQOp83fYyNC8GleCqaS0QikQBmcWCrKFiUs/B8ztRRiYOAXuCA==}
     engines: {node: '>= 12'}
 
   is-fullwidth-code-point@3.0.0:
@@ -1194,10 +1197,10 @@ packages:
     resolution: {integrity: sha512-FlCHFwNnutLgVTflOYHPW2pPcl2AACqVzExlkGQNsi4CJgqOHN7YTgDd4LuhgN1BFO3TS0vLAruV1Td6dwWPJA==}
     peerDependencies:
       '@types/markdown-it': '*'
-      markdown-it: ^14.2.0
+      markdown-it: 14.3.1
 
-  markdown-it@14.2.0:
-    resolution: {integrity: sha512-1TGiQiJVRQ3NPmZH6sx5Cfnmg6GQm9jvC1ch4TK511NjSJvjzKLzn5pPfZRNZkRPZP0HqCioSndqH8v2nRaWVQ==}
+  markdown-it@14.3.1:
+    resolution: {integrity: sha512-4Ej49aYTDFIQ+uBkfX8GBvJGccoARxxPep+7aWTs55ozbjQJpW9M26Fe53vnGgvLeVzva/amzjQQaQu9w0vMhA==}
     hasBin: true
 
   marked@4.3.0:
@@ -1398,8 +1401,8 @@ packages:
     resolution: {integrity: sha512-cfDHL6LStTEKlNilboNtobT/kEa30PtAf2Q1OgszfrG/rpVl1xaFWT9ktfkS306GmHgmnad1Sw4wabhlvFtsTw==}
     engines: {node: '>=10'}
 
-  postcss-selector-parser@7.1.1:
-    resolution: {integrity: sha512-orRsuYpJVw8LdAwqqLykBj9ecS5/cRHlI5+nvTo8LcCKmzDmqVORXtOIYEEQuL9D4BxtA1lm5isAqzQZCoQ6Eg==}
+  postcss-selector-parser@7.1.6:
+    resolution: {integrity: sha512-7qASPzhKF2l2KLboRZux8CCTRMdGiV08vWmyKzPz22qZ7ZjQBOeY7rNzNoCLSUiftJ7HUq0GERHmxw/t0dCdMw==}
     engines: {node: '>=4'}
 
   prelude-ls@1.1.2:
@@ -1880,7 +1883,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@grpc/grpc-js@1.14.4':
+  '@grpc/grpc-js@1.14.5':
     dependencies:
       '@grpc/proto-loader': 0.8.1
       '@js-sdsl/ordered-map': 4.4.2
@@ -2062,7 +2065,7 @@ snapshots:
 
   '@npmcli/query@5.0.0':
     dependencies:
-      postcss-selector-parser: 7.1.1
+      postcss-selector-parser: 7.1.6
 
   '@npmcli/redact@4.0.0': {}
 
@@ -2095,7 +2098,7 @@ snapshots:
 
   '@opentelemetry/exporter-trace-otlp-grpc@0.220.0(@opentelemetry/api@1.9.0)':
     dependencies:
-      '@grpc/grpc-js': 1.14.4
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/otlp-exporter-base': 0.220.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/otlp-grpc-exporter-base': 0.220.0(@opentelemetry/api@1.9.0)
@@ -2135,7 +2138,7 @@ snapshots:
 
   '@opentelemetry/otlp-grpc-exporter-base@0.220.0(@opentelemetry/api@1.9.0)':
     dependencies:
-      '@grpc/grpc-js': 1.14.4
+      '@grpc/grpc-js': 1.14.5
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 2.9.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/otlp-exporter-base': 0.220.0(@opentelemetry/api@1.9.0)
@@ -2230,7 +2233,7 @@ snapshots:
 
   '@pulumi/pulumi@3.253.0(ts-node@10.9.2(@types/node@22.9.3)(typescript@4.9.5))(typescript@4.9.5)':
     dependencies:
-      '@grpc/grpc-js': 1.14.4
+      '@grpc/grpc-js': 1.14.5
       '@logdna/tail-file': 2.2.0
       '@npmcli/arborist': 9.4.2
       '@opentelemetry/api': 1.9.0
@@ -2435,7 +2438,7 @@ snapshots:
 
   bluebird@3.7.2: {}
 
-  brace-expansion@5.0.9:
+  brace-expansion@5.0.12:
     dependencies:
       balanced-match: 4.0.4
 
@@ -2695,7 +2698,7 @@ snapshots:
 
   google-gax@3.6.1(encoding@0.1.13):
     dependencies:
-      '@grpc/grpc-js': 1.14.4
+      '@grpc/grpc-js': 1.14.5
       '@grpc/proto-loader': 0.7.13
       '@types/long': 4.0.2
       '@types/rimraf': 3.0.2
@@ -2745,7 +2748,7 @@ snapshots:
     dependencies:
       lru-cache: 11.2.7
 
-  http-cache-semantics@4.1.1: {}
+  http-cache-semantics@4.3.0: {}
 
   http-proxy-agent@7.0.2:
     dependencies:
@@ -2798,7 +2801,7 @@ snapshots:
 
   ini@6.0.0: {}
 
-  ip-address@10.5.1: {}
+  ip-address@10.7.1: {}
 
   is-fullwidth-code-point@3.0.0: {}
 
@@ -2836,8 +2839,8 @@ snapshots:
       escape-string-regexp: 2.0.0
       js2xmlparser: 4.0.2
       klaw: 3.0.0
-      markdown-it: 14.2.0
-      markdown-it-anchor: 8.6.7(@types/markdown-it@12.2.3)(markdown-it@14.2.0)
+      markdown-it: 14.3.1
+      markdown-it-anchor: 8.6.7(@types/markdown-it@12.2.3)(markdown-it@14.3.1)
       marked: 4.3.0
       mkdirp: 1.0.4
       requizzle: 0.2.4
@@ -2906,7 +2909,7 @@ snapshots:
       '@npmcli/agent': 4.0.0
       '@npmcli/redact': 4.0.0
       cacache: 20.0.4
-      http-cache-semantics: 4.1.1
+      http-cache-semantics: 4.3.0
       minipass: 7.1.3
       minipass-fetch: 5.0.2
       minipass-flush: 1.0.5
@@ -2917,12 +2920,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  markdown-it-anchor@8.6.7(@types/markdown-it@12.2.3)(markdown-it@14.2.0):
+  markdown-it-anchor@8.6.7(@types/markdown-it@12.2.3)(markdown-it@14.3.1):
     dependencies:
       '@types/markdown-it': 12.2.3
-      markdown-it: 14.2.0
+      markdown-it: 14.3.1
 
-  markdown-it@14.2.0:
+  markdown-it@14.3.1:
     dependencies:
       argparse: 2.0.1
       entities: 4.5.0
@@ -2941,11 +2944,11 @@ snapshots:
 
   minimatch@10.2.5:
     dependencies:
-      brace-expansion: 5.0.9
+      brace-expansion: 5.0.12
 
   minimatch@9.0.9:
     dependencies:
-      brace-expansion: 5.0.9
+      brace-expansion: 5.0.12
 
   minimist@1.2.8: {}
 
@@ -3157,7 +3160,7 @@ snapshots:
 
   picomatch@3.0.2: {}
 
-  postcss-selector-parser@7.1.1:
+  postcss-selector-parser@7.1.6:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
@@ -3285,7 +3288,7 @@ snapshots:
 
   socks@2.8.3:
     dependencies:
-      ip-address: 10.5.1
+      ip-address: 10.7.1
       smart-buffer: 4.2.0
 
   source-map-support@0.5.21:
