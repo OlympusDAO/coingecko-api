@@ -10,6 +10,7 @@ This repository provides a thin API layer for serving Olympus OHM circulating-su
 - Use `.nvmrc` and `.node-version` files for version alignment.
 - Use pnpm 11.28.7 or newer within 11.x. The exact package manager version is recorded in `package.json`.
 - Shared pnpm policy lives in `pnpm-workspace.yaml`, including `nodeLinker: hoisted` for Pulumi closure compatibility and `preferFrozenLockfile: true` for frozen lockfile installs.
+- The standalone Pulumi CLI is pinned in `mise.toml`; install it with `mise install pulumi` and use `mise exec -- pulumi` when mise is not activated. `@pulumi/pulumi` is the SDK, not the CLI.
 - Run `pnpm install` before dependency-dependent work.
 
 ## Common Commands

@@ -26,7 +26,7 @@ When the function's trigger URL is hit, the following are performed:
 
 - Node.js 22.13 or newer (required by pnpm 11). The expected major version is recorded in `.nvmrc` and `.node-version`.
 - pnpm 11.28.7 or newer within 11.x. The exact package manager version is recorded in `package.json`.
-- Pulumi CLI access for deployment tasks.
+- Pulumi CLI 3.274.1 for deployment tasks, pinned in `mise.toml`. Run `mise install pulumi`, then `mise exec -- pulumi version` to verify it.
 - GCP credentials for the target stack when previewing or deploying infrastructure.
 
 This project uses native ESM (`"type": "module"`). TypeScript is configured with NodeNext module resolution, so local relative imports in `src/**/*.ts` use `.js` specifiers even though the source files are `.ts`. Biome handles linting and formatting through `biome.json`.
