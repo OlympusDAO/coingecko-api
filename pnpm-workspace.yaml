@@ -1,6 +1,4 @@
 allowBuilds:
-  # Reviewed install-time binary fetch for the TypeScript runtime resolved in the lockfile.
-  "esbuild@0.28.1": true
   # Reviewed postinstall helper required by the patched protobufjs runtime.
   "protobufjs@7.6.5": true
 blockExoticSubdeps: true
@@ -14,6 +12,8 @@ minimumReleaseAgeExclude:
   - "@pulumi/pulumi@3.274.1"
 nodeLinker: hoisted
 overrides:
+  # Pulumi runs precompiled JavaScript; omit its unused optional TypeScript runner.
+  "@pulumi/pulumi@3.274.1>ts-node": "-"
   # These exact releases declare rimraf but never reference it in published code.
   # Remove the unused edges to eliminate glob/minimatch DoS advisories
   # GHSA-3g3m-2fjr-6pw4 and GHSA-g3hv-75wg-m249 without cross-major replacements.
