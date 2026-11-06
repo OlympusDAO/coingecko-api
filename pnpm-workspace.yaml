@@ -7,6 +7,9 @@ blockExoticSubdeps: true
 engineStrict: true
 minimumReleaseAge: 10080
 minimumReleaseAgeExclude:
+  # User-approved early update: remove Arborist paths to GHSA-3g3m-2fjr-6pw4 / GHSA-g3hv-75wg-m249.
+  # Remove this exception once the seven-day window ends: 2026-11-12T17:01:03.132Z.
+  - "@pulumi/pulumi@3.274.1"
   - "@sigstore/core@3.2.1"
   - "@sigstore/verify@3.1.1"
   - "@olympusdao/treasury-subgraph-client@3.0.0"
