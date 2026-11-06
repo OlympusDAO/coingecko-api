@@ -21,6 +21,12 @@ minimumReleaseAgeExclude:
   - markdown-it@14.3.3
 nodeLinker: hoisted
 overrides:
+  # These exact releases declare rimraf but never reference it in published code.
+  # Remove the unused edges to eliminate glob/minimatch DoS advisories
+  # GHSA-3g3m-2fjr-6pw4 and GHSA-g3hv-75wg-m249 without cross-major replacements.
+  # Recheck these removals when either parent version changes.
+  "google-gax@5.0.8>rimraf": "-"
+  "gaxios@7.1.3>rimraf": "-"
   "@grpc/grpc-js@<1.8.22": "1.14.5"
   "@grpc/grpc-js@>=1.12.0 <1.12.7": "1.14.5"
   "@protobufjs/utf8@<1.1.1": "^1.1.1"
