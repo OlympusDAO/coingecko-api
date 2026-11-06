@@ -16,7 +16,7 @@ This repository provides a thin API layer for serving Olympus OHM circulating-su
 
 - `pnpm install`: install dependencies
 - `pnpm run lint:check`: run lint checks without applying fixes
-- `pnpm run lint`: run ESLint and apply automatic fixes under `src/**/*.ts`
+- `pnpm run lint`: run Biome and apply automatic fixes under `src/**/*.ts`
 - `pnpm run build`: run the TypeScript build
 - `pnpm start`: run the local CLI path for circulating supply
 

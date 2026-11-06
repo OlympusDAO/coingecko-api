@@ -29,7 +29,9 @@ When the function's trigger URL is hit, the following are performed:
 - Pulumi CLI access for deployment tasks.
 - GCP credentials for the target stack when previewing or deploying infrastructure.
 
-This project uses native ESM (`"type": "module"`). TypeScript is configured with NodeNext module resolution, so local relative imports in `src/**/*.ts` use `.js` specifiers even though the source files are `.ts`. The ESLint config remains CommonJS as `.eslintrc.cjs`.
+This project uses native ESM (`"type": "module"`). TypeScript is configured with NodeNext module resolution, so local relative imports in `src/**/*.ts` use `.js` specifiers even though the source files are `.ts`. Biome handles linting and formatting through `biome.json`.
+
+When pnpm rewrites dependency resolutions, `minimumReleaseAgeExcludePrune` removes release-age exceptions for versions no longer resolved. Exceptions for installed versions still need an explicit expiry review; the seven-day minimum remains enforced for other releases.
 
 ## Common Tasks
 
