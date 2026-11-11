@@ -54,3 +54,8 @@ overrides:
 preferFrozenLockfile: true
 strictDepBuilds: true
 trustLockfile: false
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  # User-approved: this existing Node types dependency lacks publishing provenance.
+  # Remove when @types/node accepts a version that passes the trust policy.
+  - "undici-types@6.19.8"
