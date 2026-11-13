@@ -6,10 +6,6 @@ engineStrict: true
 minimumReleaseAge: 10080
 # Prune exceptions for versions absent from the lockfile; age expiry is reviewed separately.
 minimumReleaseAgeExcludePrune: true
-minimumReleaseAgeExclude:
-  # User-approved early update: remove Arborist paths to GHSA-3g3m-2fjr-6pw4 / GHSA-g3hv-75wg-m249.
-  # Remove this exception once the seven-day window ends: 2026-11-12T17:01:03.132Z.
-  - "@pulumi/pulumi@3.274.1"
 nodeLinker: hoisted
 overrides:
   # Pulumi runs precompiled JavaScript; omit its unused optional TypeScript runner.
