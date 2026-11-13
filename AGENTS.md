@@ -10,15 +10,16 @@ This repository provides a thin API layer for serving Olympus OHM circulating-su
 - Use `.nvmrc` and `.node-version` files for version alignment.
 - Use pnpm 11.28.7 or newer within 11.x. The exact package manager version is recorded in `package.json`.
 - Shared pnpm policy lives in `pnpm-workspace.yaml`, including `nodeLinker: hoisted` for Pulumi closure compatibility and `preferFrozenLockfile: true` for frozen lockfile installs.
+- The standalone Pulumi CLI is pinned in `mise.toml`; install it with `mise install pulumi` and use `mise exec -- pulumi` when mise is not activated. `@pulumi/pulumi` is the SDK, not the CLI.
 - Run `pnpm install` before dependency-dependent work.
 
 ## Common Commands
 
 - `pnpm install`: install dependencies
 - `pnpm run lint:check`: run lint checks without applying fixes
-- `pnpm run lint`: run ESLint and apply automatic fixes under `src/**/*.ts`
+- `pnpm run lint`: run Biome and apply automatic fixes under `src/**/*.ts`
 - `pnpm run build`: run the TypeScript build
-- `pnpm start`: run the local CLI path for circulating supply
+- `pnpm start`: build with `tsc` and run the compiled local CLI for circulating supply
 
 There is no `test` script at the moment. Use `pnpm run lint:check` and `pnpm run build` as the baseline validation commands unless tests are added.
 
@@ -31,7 +32,7 @@ There is no `test` script at the moment. Use `pnpm run lint:check` and `pnpm run
 
 ## Deployment
 
-Deployment is managed by Pulumi from `src/index.ts`.
+Deployment is managed by Pulumi from compiled `bin/index.js`, built from `src/index.ts`. Automatic TypeScript compilation is disabled in `Pulumi.yaml`; rebuild after source changes before running Pulumi.
 
 - `Pulumi.dev.yaml`: development stack using GCP project `coingecko-api-dev`, region `us-central1`, credentials file `gcp_credentials_dev.json`.
 - `Pulumi.prod.yaml`: production stack using GCP project `coingecko-api-382821`, region `us-central1`, credentials file `gcp_credentials.json`.
@@ -39,6 +40,7 @@ Deployment is managed by Pulumi from `src/index.ts`.
 Deployment checklist:
 
 1. Run `pnpm install`.
+1. Run `pnpm run build`.
 1. Place the target stack's GCP service account JSON file at the path referenced by the Pulumi config. Do not commit credential files.
 1. Run `pulumi stack select dev` or `pulumi stack select prod`.
 1. Run `pulumi refresh`.

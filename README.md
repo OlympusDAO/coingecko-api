@@ -26,10 +26,12 @@ When the function's trigger URL is hit, the following are performed:
 
 - Node.js 22.13 or newer (required by pnpm 11). The expected major version is recorded in `.nvmrc` and `.node-version`.
 - pnpm 11.28.7 or newer within 11.x. The exact package manager version is recorded in `package.json`.
-- Pulumi CLI access for deployment tasks.
+- Pulumi CLI 3.274.1 for deployment tasks, pinned in `mise.toml`. Run `mise install pulumi`, then `mise exec -- pulumi version` to verify it.
 - GCP credentials for the target stack when previewing or deploying infrastructure.
 
-This project uses native ESM (`"type": "module"`). TypeScript is configured with NodeNext module resolution, so local relative imports in `src/**/*.ts` use `.js` specifiers even though the source files are `.ts`. The ESLint config remains CommonJS as `.eslintrc.cjs`.
+This project uses native ESM (`"type": "module"`). TypeScript is configured with NodeNext module resolution, so local relative imports in `src/**/*.ts` use `.js` specifiers even though the source files are `.ts`. Biome handles linting and formatting through `biome.json`.
+
+When pnpm rewrites dependency resolutions, `minimumReleaseAgeExcludePrune` removes release-age exceptions for versions no longer resolved. Exceptions for installed versions still need an explicit expiry review; the seven-day minimum remains enforced for other releases.
 
 ## Common Tasks
 
@@ -57,7 +59,7 @@ Run lint and apply automatic fixes:
 pnpm run lint
 ```
 
-Run the local CLI:
+Build and run the local CLI (`pnpm start` compiles with `tsc` first):
 
 ```sh
 pnpm start
@@ -77,7 +79,7 @@ A key then needs to be created for the service account and saved to a JSON file.
 
 ## Deployment
 
-Deployment is handled by Pulumi, with hosting on GCP.
+Deployment is handled by Pulumi, with hosting on GCP. Pulumi runs the compiled ESM entry point `bin/index.js` with automatic TypeScript compilation disabled. Run `pnpm run build` after source changes and before any Pulumi preview or deployment.
 
 This repo uses pnpm with `nodeLinker: hoisted` in `pnpm-workspace.yaml` to avoid Pulumi closure loading errors like `Error: package.json export path for ".pnpm/..." not found`. If you hit that issue in another Pulumi repo using pnpm, try the hoisted linker layout before changing application code.
 
@@ -89,6 +91,7 @@ Stack config is kept in:
 To deploy:
 
 1. Install dependencies with `pnpm install`.
+1. Run `pnpm run build` to compile the Pulumi program and application.
 1. Obtain the JSON credentials file for the project's service account and save it at the path referenced by the target stack config. Firebase requires a service account for deployment, hence the need to jump through this hoop.
 1. Run `pulumi stack select dev` or `pulumi stack select prod`.
 1. Run `pulumi refresh` to sync Pulumi state with GCP.
