@@ -1,7 +1,6 @@
 {
     "recommendations": [
-        "rvest.vs-code-prettier-eslint",
-        "dbaeumer.vscode-eslint",
+        "biomejs.biome",
         "mquandalle.graphql",
         "gruntfuggly.todo-tree",
         "redhat.vscode-yaml"

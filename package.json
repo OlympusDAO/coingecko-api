@@ -1,15 +1,13 @@
 {
   "name": "coingecko-api",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "bin/index.js",
   "description": "Serves data on the Olympus protocol to the CoinGecko API",
   "devDependencies": {
     "@biomejs/biome": "2.5.0",
-    "@pulumi/gcp": "^9.18.0",
-    "@pulumi/pulumi": "^3.253.0",
+    "@pulumi/gcp": "^9.37.1",
+    "@pulumi/pulumi": "^3.274.1",
     "@types/node": "22.9.3",
-    "ts-node": "^10.9.2",
-    "tsx": "4.22.4",
     "typescript": "^4.9.5"
   },
   "dependencies": {
@@ -20,7 +18,7 @@
     "build": "tsc",
     "lint": "biome check --write src",
     "lint:check": "biome check src",
-    "start": "tsx src/app/cli.ts"
+    "start": "pnpm run build && node bin/app/cli.js"
   },
   "engines": {
     "node": ">=22.13",
@@ -28,5 +26,5 @@
     "npm": "use-pnpm",
     "yarn": "use-pnpm"
   },
-  "packageManager": "pnpm@11.28.7"
+  "packageManager": "pnpm@11.28.9"
 }
