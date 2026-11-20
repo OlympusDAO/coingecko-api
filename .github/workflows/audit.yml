@@ -20,3 +20,45 @@ jobs:
         uses: ./.github/actions/bootstrap
       - name: Audit pnpm dependencies
         run: pnpm audit --audit-level moderate
+
+  comment:
+    needs: audit
+    if: >-
+      ${{ !cancelled() && github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository }}
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post audit result
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          AUDIT_RESULT: ${{ needs.audit.result }}
+        shell: bash
+        run: |
+          endpoint="repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments"
+          current_head="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+          if [[ "${current_head}" != "${PR_HEAD}" ]]; then
+            exit 0
+          fi
+
+          marker='<!-- pnpm-dependency-audit -->'
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          if [[ "${AUDIT_RESULT}" == success ]]; then
+            summary='Passed at the moderate severity threshold.'
+          else
+            summary='Did not pass. See the workflow log for advisories or setup errors.'
+          fi
+
+          printf -v body '%s\n**pnpm dependency audit** (%s)\n\n%s [Workflow log](%s)' \
+            "${marker}" "${PR_HEAD:0:7}" "${summary}" "${run_url}"
+          comment_id="$(gh api --paginate "${endpoint}" --jq \
+            '.[] | select(.user.login == "github-actions[bot]" and
+              (.body | startswith("<!-- pnpm-dependency-audit -->"))) | .id' | tail -n 1)"
+          if [[ -n "${comment_id}" ]]; then
+            gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}" -f body="${body}"
+          else
+            gh api --method POST "${endpoint}" -f body="${body}"
+          fi
