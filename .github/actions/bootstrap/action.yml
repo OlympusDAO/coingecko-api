@@ -4,10 +4,20 @@ description: Standardized repository setup for CI.
 runs:
   using: composite
   steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
-      with:
-        node-version-file: .nvmrc
+    - name: Install verified Node.js
+      shell: bash
+      run: |
+        # Update the version and checksum together when changing CI's Node release.
+        archive=node-v22.23.4-linux-x64.tar.xz
+        node_dir="$(mktemp -d "${RUNNER_TEMP}/node.XXXXXX")"
+        curl --fail --silent --show-error --location \
+          "https://nodejs.org/dist/v22.23.4/${archive}" --output "${node_dir}/${archive}"
+        (
+          cd "${node_dir}"
+          echo "1805bcd35e6815559bd2eb97db438d3fdb0eb3a5e6a977b7c1badca76337e9ce  ${archive}" | sha256sum --check
+          tar -xJf "${archive}" --strip-components=1
+        )
+        echo "${node_dir}/bin" >> "${GITHUB_PATH}"
 
     - name: Enable Corepack pnpm
       run: corepack enable pnpm
